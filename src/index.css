@@ -1,0 +1,710 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+@import 'tailwindcss';
+
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@theme {
+  /* GERAL */
+  --color-background: #191919;
+  --color-brand: #19d05f;
+  --color-error: #d65e5e;
+
+  /* TEXT COLORS */
+  --color-text-white: #e7e7e7;
+  --color-text-gray: #959595;
+
+  /* BORDER COLORS */
+  --color-border-gray: #787878;
+  --color-border-dark-gray: #363636;
+  --color-border-dark-gray-2: #403e3e;
+  --color-border-button: linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0%, rgba(153, 153, 153, 0.00) 100%);
+
+  /* BUTTON COLORS */
+  --color-button-primary-default: #156634;
+  --color-button-primary: linear-gradient(90deg, rgba(204, 192, 192, 0.16) 0.48%, rgba(204, 192, 192, 0.00) 100%), #156634;
+  --color-button-primary-hover: #2F9157;
+  --color-button-primary-pressed: #1d743e;
+
+  --color-button-neutral: linear-gradient(90deg, rgba(129, 129, 129, 0.16) 0%, rgba(129, 129, 129, 0.00) 100%), #27272A;
+  --color-button-neutral-hover: #505050;
+  --color-button-neutral-pressed: #1f1f22;
+
+  --color-button-destructive: linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.00) 100%), #C95252;
+  --color-button-destructive-hover: #ff6a6a;
+  --color-button-destructive-pressed: #9b3e3e;
+
+  /* EXTRA COLORS */
+  --color-green: #24a254;
+  --color-green-accent: #228e4c;
+  --color-blue: #6b84c9;
+  --color-red: #c95252;
+  --color-yellow: #bfa149;
+  --color-purple: #9949bf;
+  --color-orange: #e38f40;
+  --color-gray: #505050;
+
+  /* COMPONENT COLORS */
+  --color-component-default: #27272a;
+  --color-component-gradient: linear-gradient(122deg, #27272A 7.78%, #181616 99.09%);
+  --color-component-black-shade: #1d1c1d;
+  --color-component-sidebar: linear-gradient(313deg, var(--Surface-Color, #27272A) 8.41%, #181616 86.5%);
+  --color-component-hover: #6b6b6b;
+  --color-component-pressed: #3b3b3b;
+
+  /* TEXT SIZE */
+  /* 32px */
+  --text-heading-m: 2rem;
+  /* 24px */
+  --text-subtitle-m: 1.5rem;
+  /* 20px */
+  --text-body-l: 1.25rem;
+  /* 16px */
+  --text-body-m: 1rem;
+  /* 14px */
+  --text-body-s: 0.875rem;
+  /* 12px */
+  --text-body-xs: 0.75rem;
+
+  /* BORDER RADIUS */
+  /* 2px */
+  --radius-xs: 0.125rem;
+  /* 4px */
+  --radius-s: 0.25rem;
+  /* 8px */
+  --radius-m: 0.5rem;
+  /* 10px */
+  --radius-default: 0.625rem;
+  /* 12px */
+  --radius-large: 0.75rem;
+  /* 16px */
+  --radius-xl: 1rem;
+  /* 20px */
+  --radius-circle: 1.25rem;
+
+  /* SPACING */
+  /* 4px */
+  --spacing-xxs: 0.25rem;
+  /* 8px */
+  --spacing-xs: 0.5rem;
+  /* 12px */
+  --spacing-s: 0.75rem;
+  /* 16px */
+  --spacing-m: 1rem;
+  /* 24px */
+  --spacing-l: 1.5rem;
+  /* 32px */
+  --spacing-xl: 2rem;
+
+  /* ANTIGO */
+  --color-usermodal: #1d1c1d;
+  --color-gray-accent: #505050;
+  --color-green-accent: #228e4c;
+  --color-fail-error: #d65e5e;
+  --color-stroke-2: #403e3e;
+  --color-stroke-3: #363636;
+  --color-component-pressed: #3B3B3B;
+  --color-component-hover: #6B6B6B;
+  --gradient-components: linear-gradient(122deg, #27272a 7.78%, #181616 99.09%);
+  --color-asideBar: linear-gradient(313deg,
+      var(--color-components) 8.41%,
+      #181616 86.5%);
+  --color-stroke: #787878;
+  --color-text-1: #d4d4d4;
+  --color-text-2: #959595;
+  --color-text-3: #24a254;
+  --color-text-4: #14d35d;
+  --color-text-5: #38a461;
+  --stroke-in-chat: linear-gradient(90deg,
+      rgba(36, 162, 84, 0) 10%,
+      #24a254 40%,
+      #5ad98a 50.48%,
+      #24a254 60%,
+      rgba(36, 162, 84, 0) 89.9%);
+
+  --font-family-primary: 'DM Sans', sans-serif;
+
+  --font-weight-regular: 400;
+  --font-weight-m: 600;
+  --font-weight-mb: 700;
+  --font-weight-bold: 800;
+
+  --font-size-heading-m: 2rem;
+  --font-size-subtitle-m: 1.5rem;
+  --font-size-body-l: 1.25rem;
+  --font-size-body-m: 1rem;
+  --font-size-body-s: 0.875rem;
+  --font-size-body-xs: 0.75rem;
+
+  --line-height-tight: 110%;
+}
+
+@layer base {
+  #root {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+@layer components {
+  .button-primary {
+    background: var(--color-button-primary);
+    box-shadow: 0 6px 12px 0 rgba(28, 32, 32, 0.40), 0 0 0 1px #4AB476 inset;
+    @apply hover:bg-button-primary-hover active:bg-button-primary-pressed;
+  }
+
+  .button-neutral {
+    background: var(--color-button-neutral);
+    box-shadow: 0 6px 12px 0 rgba(28, 32, 32, 0.60), 0 0 0 1px #696f6b inset;
+    @apply hover:bg-button-neutral-hover active:bg-button-neutral-pressed;
+  }
+
+  .button-neutral-no-border {
+    background: var(--color-button-neutral);
+    box-shadow: 0 6px 12px 0 rgba(28, 32, 32, 0.60);
+    @apply hover:bg-button-neutral-hover active:bg-button-neutral-pressed;
+  }
+
+  .button-destructive {
+    background: var(--color-button-destructive);
+    box-shadow: 0 6px 12px 0 rgba(28, 32, 32, 0.60), 0 0 0 1px #696f6b inset;
+    @apply hover:bg-button-destructive-hover active:bg-button-destructive-pressed;
+  }
+
+  .sidebar-color {
+    background: var(--color-component-sidebar);
+  }
+
+  .component-gradient {
+    background: var(--color-component-gradient);
+    box-shadow: 6px 6px 12px 0 rgba(22, 21, 21, 0.60);
+  }
+}
+
+@layer utilities {
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes shake {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+      transform: translateX(-4px);
+    }
+    20%, 40%, 60%, 80% {
+      transform: translateX(4px);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.2s ease-out;
+  }
+
+  .animate-slide-down {
+    animation: slideDown 0.2s ease-out;
+  }
+
+  .animate-shake {
+    animation: shake 0.4s ease-in-out;
+  }
+
+  /* Scrollbar styling for modals */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: var(--color-gray-accent);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-stroke);
+  }
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 20rem;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-background);
+  color: var(--color-text-1);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-m);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-tight);
+}
+
+.text-heading-m {
+  font-size: var(--font-size-heading-m);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+.text-subtitle-m {
+  font-size: var(--font-size-subtitle-m);
+  line-height: var(--line-height-tight);
+}
+
+.text-body-m {
+  font-size: var(--font-size-body-m);
+  font-weight: var(--font-weight-regular);
+  line-height: 150%;
+}
+
+.text-body-mb {
+  font-size: var(--font-size-body-m);
+  font-weight: var(--font-weight-mb);
+  line-height: 150%;
+  letter-spacing: 0.5px;
+}
+
+.text-body-weight-m {
+  font-size: var(--font-size-body-xs);
+  font-weight: var(--font-weight-m);
+  line-height: 150%;
+}
+
+.text-body-s {
+  font-size: var(--font-size-body-s);
+  line-height: 120%;
+}
+
+.text-body-xs {
+  font-size: var(--font-size-body-xs);
+}
+
+.text-color-1 {
+  color: var(--color-text-1);
+}
+
+.text-color-1x {
+  color: var(--color-text-1);
+}
+
+.text-color-1x:hover {
+  color: var(--color-text-1);
+  cursor: pointer;
+}
+
+.text-color-2 {
+  color: var(--color-text-2);
+}
+
+.text-color-2x {
+  color: var(--color-text-2);
+}
+
+.text-color-2x:hover {
+  color: var(--color-text-1);
+  cursor: pointer;
+}
+
+.text-color-3 {
+  color: var(--color-text-3);
+}
+
+.bg-component {
+  background-color: var(--color-components);
+}
+
+.bg-components {
+  background: var(--gradient-components);
+}
+
+.bg-brand {
+  background-color: var(--color-brand);
+}
+
+.bg-asideBar {
+  background-color: var(--color-asideBar);
+}
+
+.bg-green-accent {
+  background-color: var(--color-green-accent);
+}
+
+.bg-fail-error {
+  background-color: var(--color-fail-error);
+}
+
+.bg-component-pressed {
+  background-color: var(--color-component-pressed);
+}
+
+.border-gray-accent {
+  border-color: var(--color-gray-accent);
+}
+
+.border-stroke {
+  border-color: var(--color-stroke);
+}
+
+.border-stroke-2 {
+  border-color: var(--color-stroke-2);
+}
+
+.border-stroke-3 {
+  border-color: var(--color-stroke-3);
+}
+
+.border-strokex {
+  border-color: var(--color-stroke);
+}
+
+.border-stroke:hover {
+  border-color: var(--color-stroke);
+}
+
+.border-stroke-focus {
+  border-color: var(--color-stroke);
+}
+
+.border-stroke-focus:focus-within {
+  border-color: var(--color-text-white);
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+/* 3 - Estilos de Componente ChatInput */
+.chat-input-container {
+  background: var(--gradient-components);
+  padding: 1rem 2rem;
+  border-radius: 1.25rem;
+  border: 1px solid #403e3e;
+  border-image-source: var(--stroke-in-chat);
+  border-image-slice: 1;
+  border-bottom: 0;
+  border-right: 0;
+  border-left: 0;
+  min-height: 6.25rem;
+  max-height: 20rem;
+  width: 100%;
+  max-width: 45rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-shadow: 0 5px 4px 0 rgba(0, 0, 0, 0.25);
+  transition:
+    box-shadow 0.2s ease,
+    height 0.3s ease;
+}
+
+.chat-input-container.has-files {
+  max-height: 20rem;
+}
+
+.chat-input-container textarea {
+  background: transparent;
+  border: none;
+  resize: none;
+  color: var(--color-text-1);
+  width: 98.7%;
+  /*para deixar o scroll alinhado com o botao de envio*/
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-m);
+  line-height: 1.5;
+  padding-right: 1.5rem;
+  padding-left: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.chat-input-container textarea:focus {
+  outline: none;
+}
+
+.chat-input-container textarea::placeholder {
+  color: var(--color-text-2);
+}
+
+.chat-input-container textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-input-container textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-input-container textarea::-webkit-scrollbar-thumb {
+  background-color: var(--color-text-2);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.chat-input-container textarea::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-gray-accent);
+}
+
+.chat-input-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  min-height: 1.5em;
+}
+
+/* .chat-input-actions button {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 9999px;
+  transition: background-color 0.2s ease-in-out;
+} */
+
+/*.chat-input-actions button:hover:not(:disabled) {
+  background-color: var(--color-gray-accent);
+}*/
+
+/* 4. Estilos de Componente: FileChip */
+
+.file-chip-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.file-chip {
+  background-color: var(--gradient-components);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem 0.75rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid var(--color-gray-accent);
+  max-width: 100%;
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
+  max-width: 13.75rem;
+  min-width: 13.75rem;
+  max-height: 4rem;
+}
+
+.file-chip-icon-wrapper {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.file-chip-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.file-chip-info {
+  display: flex;
+  max-height: 2.5rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  min-width: 8.875rem;
+  max-width: 8.875rem;
+}
+
+.file-name-x {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: stretch;
+}
+
+.file-chip-name {
+  color: var(--color-text-1);
+  font-size: var(--font-size-body-s);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 7.4375rem;
+  max-height: 1rem;
+}
+
+.file-chip-type {
+  color: var(--color-text-1);
+  font-size: var(--font-size-body-s);
+  max-height: 0.75rem;
+  padding: 0.5 0 0 0rem;
+}
+
+.file-chip-remove {
+  background: none;
+  border: none;
+  color: var(--color-text-1);
+  cursor: pointer;
+  padding: 0 0.5rem;
+  transition: color 0.2s ease-in-out;
+}
+
+.file-chip-remove:hover {
+  color: var(--color-text-2);
+}
+
+.more-files-indicator {
+  display: flex;
+  align-self: flex-end;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 0.43rem;
+  border: 1px solid var(--color-stroke);
+  background: var(--gradient-components);
+  color: var(--color-text-1);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-body-m);
+}
+
+.chat-input-container.is-dragging-over {
+  box-shadow: inset 0 0 0 2px var(--color-text-1);
+}
+
+/* Estilo scroll fileUploadModal */
+
+.file-list-scrollbar::-webkit-scrollbar {
+  height: 8px;
+}
+
+.file-list-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.file-list-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--color-gray-accent);
+  border-radius: 4px;
+}
+
+.file-list-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-stroke);
+}
+
+/* Estilo scroll conversas asideBar*/
+
+.conversation-list-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  /* Scroll vertical */
+  height: 4px;
+}
+
+.conversation-list-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.conversation-list-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--color-gray-accent);
+  border-radius: 4px;
+}
+
+.conversation-list-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-stroke);
+}
+
+.file-chip-icon-wrapper-loading {
+  position: relative;
+  overflow: hidden;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.check-icon {
+  color: var(--color-text-2);
+}
+
+.check-icon:hover {
+  color: var(--color-text-1);
+  cursor: pointer;
+}
+
+.check-icon:active {
+  color: var(--color-green-accent);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
