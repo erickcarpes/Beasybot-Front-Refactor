@@ -9,10 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SignupIndexRouteImport } from './routes/signup/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
+import { Route as AppmainRouteRouteImport } from './routes/app/(main)/route'
+import { Route as AppmainSearchIndexRouteImport } from './routes/app/(main)/search/index'
+import { Route as AppmainMeetingIndexRouteImport } from './routes/app/(main)/meeting/index'
+import { Route as AppmainKnowledgeIndexRouteImport } from './routes/app/(main)/knowledge/index'
+import { Route as AppmainHomeIndexRouteImport } from './routes/app/(main)/home/index'
+import { Route as AppmainChatIndexRouteImport } from './routes/app/(main)/chat/index'
 
+const AppRouteRoute = AppRouteRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -28,39 +40,124 @@ const LoginIndexRoute = LoginIndexRouteImport.update({
   path: '/login/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppmainRouteRoute = AppmainRouteRouteImport.update({
+  id: '/(main)',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppmainSearchIndexRoute = AppmainSearchIndexRouteImport.update({
+  id: '/search/',
+  path: '/search/',
+  getParentRoute: () => AppmainRouteRoute,
+} as any)
+const AppmainMeetingIndexRoute = AppmainMeetingIndexRouteImport.update({
+  id: '/meeting/',
+  path: '/meeting/',
+  getParentRoute: () => AppmainRouteRoute,
+} as any)
+const AppmainKnowledgeIndexRoute = AppmainKnowledgeIndexRouteImport.update({
+  id: '/knowledge/',
+  path: '/knowledge/',
+  getParentRoute: () => AppmainRouteRoute,
+} as any)
+const AppmainHomeIndexRoute = AppmainHomeIndexRouteImport.update({
+  id: '/home/',
+  path: '/home/',
+  getParentRoute: () => AppmainRouteRoute,
+} as any)
+const AppmainChatIndexRoute = AppmainChatIndexRouteImport.update({
+  id: '/chat/',
+  path: '/chat/',
+  getParentRoute: () => AppmainRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app': typeof AppmainRouteRouteWithChildren
   '/login/': typeof LoginIndexRoute
   '/signup/': typeof SignupIndexRoute
+  '/app/chat/': typeof AppmainChatIndexRoute
+  '/app/home/': typeof AppmainHomeIndexRoute
+  '/app/knowledge/': typeof AppmainKnowledgeIndexRoute
+  '/app/meeting/': typeof AppmainMeetingIndexRoute
+  '/app/search/': typeof AppmainSearchIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/app': typeof AppmainRouteRouteWithChildren
   '/login': typeof LoginIndexRoute
   '/signup': typeof SignupIndexRoute
+  '/app/chat': typeof AppmainChatIndexRoute
+  '/app/home': typeof AppmainHomeIndexRoute
+  '/app/knowledge': typeof AppmainKnowledgeIndexRoute
+  '/app/meeting': typeof AppmainMeetingIndexRoute
+  '/app/search': typeof AppmainSearchIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/app': typeof AppRouteRouteWithChildren
+  '/app/(main)': typeof AppmainRouteRouteWithChildren
   '/login/': typeof LoginIndexRoute
   '/signup/': typeof SignupIndexRoute
+  '/app/(main)/chat/': typeof AppmainChatIndexRoute
+  '/app/(main)/home/': typeof AppmainHomeIndexRoute
+  '/app/(main)/knowledge/': typeof AppmainKnowledgeIndexRoute
+  '/app/(main)/meeting/': typeof AppmainMeetingIndexRoute
+  '/app/(main)/search/': typeof AppmainSearchIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login/' | '/signup/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/login/'
+    | '/signup/'
+    | '/app/chat/'
+    | '/app/home/'
+    | '/app/knowledge/'
+    | '/app/meeting/'
+    | '/app/search/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/signup'
-  id: '__root__' | '/' | '/login/' | '/signup/'
+  to:
+    | '/'
+    | '/app'
+    | '/login'
+    | '/signup'
+    | '/app/chat'
+    | '/app/home'
+    | '/app/knowledge'
+    | '/app/meeting'
+    | '/app/search'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/app/(main)'
+    | '/login/'
+    | '/signup/'
+    | '/app/(main)/chat/'
+    | '/app/(main)/home/'
+    | '/app/(main)/knowledge/'
+    | '/app/(main)/meeting/'
+    | '/app/(main)/search/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRouteRoute: typeof AppRouteRouteWithChildren
   LoginIndexRoute: typeof LoginIndexRoute
   SignupIndexRoute: typeof SignupIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -82,11 +179,86 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/(main)': {
+      id: '/app/(main)'
+      path: ''
+      fullPath: '/app'
+      preLoaderRoute: typeof AppmainRouteRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/(main)/search/': {
+      id: '/app/(main)/search/'
+      path: '/search'
+      fullPath: '/app/search/'
+      preLoaderRoute: typeof AppmainSearchIndexRouteImport
+      parentRoute: typeof AppmainRouteRoute
+    }
+    '/app/(main)/meeting/': {
+      id: '/app/(main)/meeting/'
+      path: '/meeting'
+      fullPath: '/app/meeting/'
+      preLoaderRoute: typeof AppmainMeetingIndexRouteImport
+      parentRoute: typeof AppmainRouteRoute
+    }
+    '/app/(main)/knowledge/': {
+      id: '/app/(main)/knowledge/'
+      path: '/knowledge'
+      fullPath: '/app/knowledge/'
+      preLoaderRoute: typeof AppmainKnowledgeIndexRouteImport
+      parentRoute: typeof AppmainRouteRoute
+    }
+    '/app/(main)/home/': {
+      id: '/app/(main)/home/'
+      path: '/home'
+      fullPath: '/app/home/'
+      preLoaderRoute: typeof AppmainHomeIndexRouteImport
+      parentRoute: typeof AppmainRouteRoute
+    }
+    '/app/(main)/chat/': {
+      id: '/app/(main)/chat/'
+      path: '/chat'
+      fullPath: '/app/chat/'
+      preLoaderRoute: typeof AppmainChatIndexRouteImport
+      parentRoute: typeof AppmainRouteRoute
+    }
   }
 }
 
+interface AppmainRouteRouteChildren {
+  AppmainChatIndexRoute: typeof AppmainChatIndexRoute
+  AppmainHomeIndexRoute: typeof AppmainHomeIndexRoute
+  AppmainKnowledgeIndexRoute: typeof AppmainKnowledgeIndexRoute
+  AppmainMeetingIndexRoute: typeof AppmainMeetingIndexRoute
+  AppmainSearchIndexRoute: typeof AppmainSearchIndexRoute
+}
+
+const AppmainRouteRouteChildren: AppmainRouteRouteChildren = {
+  AppmainChatIndexRoute: AppmainChatIndexRoute,
+  AppmainHomeIndexRoute: AppmainHomeIndexRoute,
+  AppmainKnowledgeIndexRoute: AppmainKnowledgeIndexRoute,
+  AppmainMeetingIndexRoute: AppmainMeetingIndexRoute,
+  AppmainSearchIndexRoute: AppmainSearchIndexRoute,
+}
+
+const AppmainRouteRouteWithChildren = AppmainRouteRoute._addFileChildren(
+  AppmainRouteRouteChildren,
+)
+
+interface AppRouteRouteChildren {
+  AppmainRouteRoute: typeof AppmainRouteRouteWithChildren
+}
+
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppmainRouteRoute: AppmainRouteRouteWithChildren,
+}
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRouteRoute: AppRouteRouteWithChildren,
   LoginIndexRoute: LoginIndexRoute,
   SignupIndexRoute: SignupIndexRoute,
 }
