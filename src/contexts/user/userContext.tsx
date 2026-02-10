@@ -8,8 +8,16 @@ import {
   useState,
 } from 'react';
 
-import { getAccessToken, setAccessToken } from '@/services/beasybox-api/api';
-import { login as loginApi, logout as logoutApi, refreshTokens } from '@/services/beasybox-api/auth';
+import {
+  login as loginApi,
+  logout as logoutApi,
+  refreshTokens,
+} from '@/services/beasybox-api/auth';
+import {
+  clearAccessToken,
+  decodeTokenPayload,
+  getAccessToken,
+} from '@/services/beasybox-api/tokenManager';
 import { fetchUser, type User } from '@/services/beasybox-api/user';
 
 // ============================================================================
@@ -43,7 +51,20 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 // Provider
 // ============================================================================
 
-export function AuthProvider({ children }: AuthProviderProps) {
+/**
+ * Extrai o userId do access token e busca os dados do usuário
+ */
+const fetchUserFromToken = async (): Promise<null | User> => {
+  const token = getAccessToken();
+  if (!token) return null;
+
+  const payload = decodeTokenPayload(token);
+  if (!payload) return null;
+
+  return fetchUser(payload.sub);
+};
+
+export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<null | User>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -56,20 +77,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     const hydrateAuth = async () => {
       try {
-        // Tenta renovar o token usando o cookie
         await refreshTokens();
-
-        // Se conseguiu, busca os dados do usuário
-        // Decodifica o token para pegar o userId
-        const token = getAccessToken();
-        if (token) {
-          const payload = JSON.parse(atob(token.split('.')[1])) as { sub: string };
-          const userData = await fetchUser(payload.sub);
-          setUser(userData);
-        }
+        const userData = await fetchUserFromToken();
+        setUser(userData);
       } catch {
-        // Refresh falhou - usuário não está logado
-        setAccessToken(null);
+        clearAccessToken();
       } finally {
         setIsLoading(false);
       }
@@ -82,12 +94,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
    * Login com email e senha
    */
   const login = useCallback(async (email: string, password: string) => {
-    const response = await loginApi({ email, password });
-
-    // Decodifica o token para pegar o userId
-    const payload = JSON.parse(atob(response.accessToken.split('.')[1])) as { sub: string };
-    const userData = await fetchUser(payload.sub);
-
+    await loginApi({ email, password });
+    const userData = await fetchUserFromToken();
     setUser(userData);
   }, []);
 
@@ -114,7 +122,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+};
 
 // ============================================================================
 // Hook
@@ -124,7 +132,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
  * Hook para acessar o contexto de autenticação
  * @throws Error se usado fora do AuthProvider
  */
-export function useAuth(): AuthContextValue {
+export const useAuth = (): AuthContextValue => {
   const context = useContext(AuthContext);
 
   if (!context) {
@@ -132,4 +140,4 @@ export function useAuth(): AuthContextValue {
   }
 
   return context;
-}
+};
