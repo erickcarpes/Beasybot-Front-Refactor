@@ -6,18 +6,6 @@ import api from './api';
 // Types
 // ============================================================================
 
-export enum AccountStatusEnum {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
-  SUSPENDED = 'SUSPENDED',
-}
-
-export enum AccountTierEnum {
-  FREE = 'FREE',
-  PREMIUM = 'PREMIUM',
-  PRO = 'PRO',
-}
-
 export interface Account {
   accountTier: AccountTierEnum;
   id: string;
@@ -29,6 +17,10 @@ export interface Account {
   storageUsedInBytes: number;
   tokensUsed: number;
 }
+
+export type AccountStatusEnum = 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+
+export type AccountTierEnum = 'FREE' | 'PREMIUM' | 'PRO';
 
 // ============================================================================
 // API Functions

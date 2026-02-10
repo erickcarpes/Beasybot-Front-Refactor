@@ -6,10 +6,7 @@ import api from './api';
 // Types
 // ============================================================================
 
-export enum RoleEnum {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
-}
+export type RoleEnum = 'ADMIN' | 'USER';
 
 export interface User {
   cpf?: string;
