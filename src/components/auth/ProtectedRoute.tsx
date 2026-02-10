@@ -1,10 +1,8 @@
-import { Navigate, useLocation } from '@tanstack/react-router';
-import type { ReactNode } from 'react';
+import { Navigate, Outlet } from '@tanstack/react-router';
 
 import { useAuth } from '@/contexts/user/userContext';
 
 interface ProtectedRouteProps {
-  readonly children: ReactNode;
   /** Rota para redirecionar se não autenticado */
   readonly redirectTo?: string;
 }
@@ -13,12 +11,8 @@ interface ProtectedRouteProps {
  * Wrapper que protege rotas autenticadas
  * Redireciona para login se o usuário não está autenticado
  */
-export default function ProtectedRoute({
-  children,
-  redirectTo = '/login',
-}: ProtectedRouteProps) {
+export default function ProtectedRoute({ redirectTo = '/login' }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading } = useAuth();
-  const location = useLocation();
 
   // Enquanto carrega, mostra loading
   if (isLoading) {
@@ -31,8 +25,8 @@ export default function ProtectedRoute({
 
   // Se não autenticado, redireciona
   if (!isAuthenticated) {
-    return <Navigate to={redirectTo} search={{ redirect: location.pathname }} />;
+    return <Navigate to={redirectTo} />;
   }
 
-  return <>{children}</>;
+  return <Outlet />;
 }
