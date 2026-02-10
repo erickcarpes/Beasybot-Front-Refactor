@@ -1,6 +1,7 @@
 import { FilePlus2Icon, Search, Video } from 'lucide-react';
 
-import arrowLogo from '../../assets/arrow-logo.svg';
+import arrowLogo from '@/assets/arrow-logo.svg';
+
 import SidebarMenuItem from './SidebarMenuItem';
 
 /**

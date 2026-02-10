@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { type ComponentPropsWithoutRef, forwardRef, type ReactNode } from 'react';
 
-import { cn } from '../../utils/cn';
+import { cn } from '@/utils/cn';
 
 export interface CheckboxProps extends Omit<ComponentPropsWithoutRef<'input'>, 'type'> {
   error?: string;

@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 
-import { createRequirements, passwordChecks } from '../../../utils/formHelpers';
+import { createRequirements, passwordChecks } from '@/utils/formHelpers';
 
 const schema = z.object({
   email: z.email('Email inválido'),

@@ -1,7 +1,7 @@
 import { X } from 'lucide-react';
 import { forwardRef, type HTMLAttributes, type ReactNode } from 'react';
 
-import { cn } from '../../../utils/cn';
+import { cn } from '@/utils/cn';
 
 interface ModalTitleProps extends HTMLAttributes<HTMLHeadingElement> {
   children: ReactNode;

@@ -1,7 +1,7 @@
 import Lottie from 'lottie-react';
 
-import animatedLogin from '../assets/login-animation.json';
-import { LoginForm } from '../features/login';
+import animatedLogin from '@/assets/login-animation.json';
+import { LoginForm } from '@/features/login';
 
 export default function LoginPage() {
   return (

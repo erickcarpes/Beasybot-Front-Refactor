@@ -1,7 +1,7 @@
 import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import Toast, { ToastContainer, type ToastType } from '../components/ui/Toast';
+import Toast, { ToastContainer, type ToastType } from '@/components/ui/Toast';
 
 interface ToastContextData {
   showToast: (message: string, type?: ToastType, title?: string) => void;

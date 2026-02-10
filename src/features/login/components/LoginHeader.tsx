@@ -1,4 +1,4 @@
-import beasyboxLogo from '../../../assets/logo-bbox.svg';
+import beasyboxLogo from '@/assets/logo-bbox.svg';
 
 export default function LoginHeader() {
   return (

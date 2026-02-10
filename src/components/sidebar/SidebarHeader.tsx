@@ -1,7 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronsLeft, ChevronsRight } from 'lucide-react';
 
-import logoBbox from '../../assets/logo-bbox.svg';
+import logoBbox from '@/assets/logo-bbox.svg';
+
 import { useSidebar } from './SidebarContext';
 
 /**

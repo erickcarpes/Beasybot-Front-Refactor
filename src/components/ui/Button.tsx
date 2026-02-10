@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { type ComponentProps, type ElementType } from 'react';
 
-import { cn } from '../../utils/cn';
+import { cn } from '@/utils/cn';
 
 export interface ButtonProps
   extends ComponentProps<'button'>, Omit<ButtonVariantProps, 'size' | 'variant'> {

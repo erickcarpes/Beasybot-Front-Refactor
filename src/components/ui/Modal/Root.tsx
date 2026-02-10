@@ -1,6 +1,6 @@
 import { forwardRef, type HTMLAttributes, type ReactNode } from 'react';
 
-import { cn } from '../../../utils/cn';
+import { cn } from '@/utils/cn';
 
 interface ModalRootProps extends HTMLAttributes<HTMLDivElement> {
   backdropClassName?: string;
