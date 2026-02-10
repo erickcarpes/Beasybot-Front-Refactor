@@ -6,16 +6,16 @@ import api from './api';
 // Types
 // ============================================================================
 
-export enum AccountTierEnum {
-  FREE = 'FREE',
-  PREMIUM = 'PREMIUM',
-  PRO = 'PRO',
-}
-
 export enum AccountStatusEnum {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
   SUSPENDED = 'SUSPENDED',
+}
+
+export enum AccountTierEnum {
+  FREE = 'FREE',
+  PREMIUM = 'PREMIUM',
+  PRO = 'PRO',
 }
 
 export interface Account {

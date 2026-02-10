@@ -1,4 +1,5 @@
-import { apiAuth, setAccessToken } from './api';
+import { apiAuth } from './api';
+import { setAccessToken } from './tokenManager';
 
 // ============================================================================
 // Types

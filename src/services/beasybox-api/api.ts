@@ -1,22 +1,9 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
+import { getAccessToken, setAccessToken } from './tokenManager';
+
 const baseURL =
   (import.meta.env.VITE_BEASYBOX_API as string | undefined) ?? 'http://localhost:3000';
-
-// Armazena o access token em memória (mais seguro que localStorage)
-let accessToken: null | string = null;
-
-/**
- * Atualiza o access token em memória
- */
-export const setAccessToken = (token: null | string): void => {
-  accessToken = token;
-};
-
-/**
- * Retorna o access token atual
- */
-export const getAccessToken = (): null | string => accessToken;
 
 /**
  * API principal - usa interceptors para auth
@@ -38,52 +25,67 @@ export const apiAuth = axios.create({
   withCredentials: true,
 });
 
-// Flag para evitar múltiplos refreshes simultâneos
+// ============================================================================
+// Refresh Queue (evita múltiplos refreshes simultâneos)
+// ============================================================================
+
 let isRefreshing = false;
-let refreshSubscribers: Array<(token: string) => void> = [];
+let refreshSubscribers: ((token: string) => void)[] = [];
 
 const subscribeToTokenRefresh = (callback: (token: string) => void): void => {
   refreshSubscribers.push(callback);
 };
 
 const onTokenRefreshed = (token: string): void => {
-  refreshSubscribers.forEach((callback) => {
+  for (const callback of refreshSubscribers) {
     callback(token);
-  });
+  }
   refreshSubscribers = [];
 };
 
+// ============================================================================
+// Interceptors
+// ============================================================================
+
 /**
- * Interceptor de REQUEST - adiciona Authorization header
+ * REQUEST - Adiciona Authorization header automaticamente
  */
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = getAccessToken();
-    if (token && config.headers) {
+    if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  async (error: AxiosError) => Promise.reject(error),
+  (error: AxiosError) => {
+    throw error;
+  },
 );
 
 /**
- * Interceptor de RESPONSE - auto-refresh em 401
+ * RESPONSE - Auto-refresh em 401
+ *
+ * Quando uma requisição retorna 401:
+ * 1. Tenta renovar o token via /auth/refresh
+ * 2. Se conseguir, re-executa a requisição original
+ * 3. Se falhar, redireciona para /login
+ *
+ * Requisições simultâneas que falham com 401 são enfileiradas
+ * e re-executadas após o refresh completar.
  */
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const originalRequest = error.config as { _retry?: boolean } & InternalAxiosRequestConfig;
 
-    // Se não é 401 ou já tentou retry, rejeita
     if (error.response?.status !== 401 || originalRequest._retry) {
-      return Promise.reject(error);
+      throw error;
     }
 
-    // Marca que já tentou retry
     originalRequest._retry = true;
 
-    // Se já está refreshing, aguarda na fila
+    // Enfileira se já está refreshing
     if (isRefreshing) {
       return new Promise((resolve) => {
         subscribeToTokenRefresh((token: string) => {
@@ -96,20 +98,17 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      // Importação dinâmica para evitar dependência circular
       const { refreshTokens } = await import('./auth');
       const newToken = await refreshTokens();
 
-      setAccessToken(newToken);
       onTokenRefreshed(newToken);
 
       originalRequest.headers.Authorization = `Bearer ${newToken}`;
-      return api(originalRequest);
+      return await api(originalRequest);
     } catch (refreshError) {
-      // Refresh falhou - limpa token e redireciona para login
       setAccessToken(null);
       globalThis.location.href = '/login';
-      return Promise.reject(refreshError);
+      return refreshError;
     } finally {
       isRefreshing = false;
     }
