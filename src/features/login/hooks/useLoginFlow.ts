@@ -17,7 +17,7 @@ export const useLoginFlow = () => {
       try {
         await login(data.email, data.password);
         showToast('Login realizado com sucesso!', 'success');
-        void navigate({ to: '/' });
+        void navigate({ to: '/app/home' });
       } catch {
         showToast('Email ou senha incorretos.', 'error');
         setError('password', { message: 'Email ou senha incorretos' });
