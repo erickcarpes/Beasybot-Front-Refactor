@@ -2,72 +2,28 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 
+import { type Chat, type ChatOrigin, useGetAllChats } from '@/features/chat';
 import { cn } from '@/utils/cn';
 
 import { useSidebar } from './SidebarContext';
 
-// ============================================================================
-// Types
-// ============================================================================
-
-interface Conversation {
-  id: string;
-  origin: ConversationOrigin;
-  title: string;
-}
-
-type ConversationOrigin = 'WEB' | 'WHATSAPP';
-
-// ============================================================================
-// Mock Data
-// ============================================================================
-
-const MOCK_CONVERSATIONS: Conversation[] = [
-  { id: '1', origin: 'WEB', title: 'qual foi o assunto da' },
-  { id: '2', origin: 'WEB', title: 'me faça a ata da' },
-  { id: '3', origin: 'WEB', title: 'eu preciso que voce crie' },
-  { id: '4', origin: 'WEB', title: 'me gere a ata dessa' },
-  { id: '5', origin: 'WEB', title: 'ola' },
-  { id: '6', origin: 'WHATSAPP', title: 'Marketing e Vendas' },
-  { id: '7', origin: 'WHATSAPP', title: 'Análise de Mercado' },
-  { id: '8', origin: 'WHATSAPP', title: 'Gerenciamento de caixa' },
-  { id: '9', origin: 'WEB', title: 'qual foi o assunto da' },
-  { id: '10', origin: 'WEB', title: 'me faça a ata da reunião de hoje hoje' },
-  { id: '11', origin: 'WEB', title: 'eu preciso que voce crie' },
-  { id: '12', origin: 'WEB', title: 'me gere a ata dessa' },
-  { id: '13', origin: 'WEB', title: 'ola' },
-  { id: '14', origin: 'WHATSAPP', title: 'Marketing e Vendas' },
-  { id: '15', origin: 'WHATSAPP', title: 'Análise de Mercado' },
-  { id: '16', origin: 'WHATSAPP', title: 'Gerenciamento de caixa' },
-  { id: '17', origin: 'WEB', title: 'qual foi o assunto da' },
-  { id: '18', origin: 'WEB', title: 'me faça a ata da' },
-  { id: '19', origin: 'WEB', title: 'eu preciso que voce crie' },
-  { id: '20', origin: 'WEB', title: 'me gere a ata dessa' },
-  { id: '21', origin: 'WEB', title: 'ola' },
-  { id: '22', origin: 'WHATSAPP', title: 'Marketing e Vendas' },
-  { id: '23', origin: 'WHATSAPP', title: 'Análise de Mercado' },
-  { id: '24', origin: 'WHATSAPP', title: 'Gerenciamento de caixa' },
-];
-
-const ORIGIN_LABELS: Record<ConversationOrigin, string> = {
+const ORIGIN_LABELS: Record<ChatOrigin, string> = {
+  MEETING: 'Web',
   WEB: 'Web',
   WHATSAPP: 'Whatsapp',
 };
-
-// ============================================================================
-// Component
-// ============================================================================
 
 /**
  * Lista de conversas recentes na sidebar, agrupadas por origem (WEB / WHATSAPP)
  * Só aparece quando a sidebar está expandida
  */
 export default function SidebarConversations() {
+  const { data: chats = [] } = useGetAllChats();
   const { isExpanded } = useSidebar();
   const [activeConversationId, setActiveConversationId] = useState<null | string>(null);
 
-  const webConversations = MOCK_CONVERSATIONS.filter((c) => c.origin === 'WEB');
-  const whatsappConversations = MOCK_CONVERSATIONS.filter((c) => c.origin === 'WHATSAPP');
+  const webConversations = chats.filter((c) => c.origin === 'WEB' || c.origin === 'MEETING');
+  const whatsappConversations = chats.filter((c) => c.origin === 'WHATSAPP');
 
   return (
     <AnimatePresence mode="wait">
@@ -119,9 +75,9 @@ function ConversationGroup({
   origin,
 }: {
   readonly activeConversationId: null | string;
-  readonly conversations: Conversation[];
+  readonly conversations: Chat[];
   readonly onSelectConversation: (id: string) => void;
-  readonly origin: ConversationOrigin;
+  readonly origin: ChatOrigin;
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -162,7 +118,7 @@ function ConversationGroup({
               return (
                 <button
                   className={cn(
-                    'rounded-m text-body-s ml-7 cursor-pointer truncate py-2 pl-2 text-left transition-colors',
+                    'rounded-m ml-7 cursor-pointer truncate py-1.5 pl-2 text-left text-sm transition-colors',
                     isActive
                       ? 'bg-component-default text-text-white'
                       : 'text-text-gray hover:bg-component-hover/50 hover:text-text-white',
@@ -173,7 +129,7 @@ function ConversationGroup({
                   }}
                   type="button"
                 >
-                  {conversation.title}
+                  {conversation.name}
                 </button>
               );
             })}
