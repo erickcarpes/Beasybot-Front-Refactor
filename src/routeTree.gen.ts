@@ -18,7 +18,7 @@ import { Route as AppmainSearchIndexRouteImport } from './routes/app/(main)/sear
 import { Route as AppmainMeetingIndexRouteImport } from './routes/app/(main)/meeting/index'
 import { Route as AppmainKnowledgeIndexRouteImport } from './routes/app/(main)/knowledge/index'
 import { Route as AppmainHomeIndexRouteImport } from './routes/app/(main)/home/index'
-import { Route as AppmainChatIndexRouteImport } from './routes/app/(main)/chat/index'
+import { Route as AppmainChatChatIdRouteImport } from './routes/app/(main)/chat/$chatId'
 
 const AppRouteRoute = AppRouteRouteImport.update({
   id: '/app',
@@ -64,9 +64,9 @@ const AppmainHomeIndexRoute = AppmainHomeIndexRouteImport.update({
   path: '/home/',
   getParentRoute: () => AppmainRouteRoute,
 } as any)
-const AppmainChatIndexRoute = AppmainChatIndexRouteImport.update({
-  id: '/chat/',
-  path: '/chat/',
+const AppmainChatChatIdRoute = AppmainChatChatIdRouteImport.update({
+  id: '/chat/$chatId',
+  path: '/chat/$chatId',
   getParentRoute: () => AppmainRouteRoute,
 } as any)
 
@@ -75,7 +75,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppmainRouteRouteWithChildren
   '/login/': typeof LoginIndexRoute
   '/signup/': typeof SignupIndexRoute
-  '/app/chat/': typeof AppmainChatIndexRoute
+  '/app/chat/$chatId': typeof AppmainChatChatIdRoute
   '/app/home/': typeof AppmainHomeIndexRoute
   '/app/knowledge/': typeof AppmainKnowledgeIndexRoute
   '/app/meeting/': typeof AppmainMeetingIndexRoute
@@ -86,7 +86,7 @@ export interface FileRoutesByTo {
   '/app': typeof AppmainRouteRouteWithChildren
   '/login': typeof LoginIndexRoute
   '/signup': typeof SignupIndexRoute
-  '/app/chat': typeof AppmainChatIndexRoute
+  '/app/chat/$chatId': typeof AppmainChatChatIdRoute
   '/app/home': typeof AppmainHomeIndexRoute
   '/app/knowledge': typeof AppmainKnowledgeIndexRoute
   '/app/meeting': typeof AppmainMeetingIndexRoute
@@ -99,7 +99,7 @@ export interface FileRoutesById {
   '/app/(main)': typeof AppmainRouteRouteWithChildren
   '/login/': typeof LoginIndexRoute
   '/signup/': typeof SignupIndexRoute
-  '/app/(main)/chat/': typeof AppmainChatIndexRoute
+  '/app/(main)/chat/$chatId': typeof AppmainChatChatIdRoute
   '/app/(main)/home/': typeof AppmainHomeIndexRoute
   '/app/(main)/knowledge/': typeof AppmainKnowledgeIndexRoute
   '/app/(main)/meeting/': typeof AppmainMeetingIndexRoute
@@ -112,7 +112,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/login/'
     | '/signup/'
-    | '/app/chat/'
+    | '/app/chat/$chatId'
     | '/app/home/'
     | '/app/knowledge/'
     | '/app/meeting/'
@@ -123,7 +123,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/login'
     | '/signup'
-    | '/app/chat'
+    | '/app/chat/$chatId'
     | '/app/home'
     | '/app/knowledge'
     | '/app/meeting'
@@ -135,7 +135,7 @@ export interface FileRouteTypes {
     | '/app/(main)'
     | '/login/'
     | '/signup/'
-    | '/app/(main)/chat/'
+    | '/app/(main)/chat/$chatId'
     | '/app/(main)/home/'
     | '/app/(main)/knowledge/'
     | '/app/(main)/meeting/'
@@ -214,18 +214,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppmainHomeIndexRouteImport
       parentRoute: typeof AppmainRouteRoute
     }
-    '/app/(main)/chat/': {
-      id: '/app/(main)/chat/'
-      path: '/chat'
-      fullPath: '/app/chat/'
-      preLoaderRoute: typeof AppmainChatIndexRouteImport
+    '/app/(main)/chat/$chatId': {
+      id: '/app/(main)/chat/$chatId'
+      path: '/chat/$chatId'
+      fullPath: '/app/chat/$chatId'
+      preLoaderRoute: typeof AppmainChatChatIdRouteImport
       parentRoute: typeof AppmainRouteRoute
     }
   }
 }
 
 interface AppmainRouteRouteChildren {
-  AppmainChatIndexRoute: typeof AppmainChatIndexRoute
+  AppmainChatChatIdRoute: typeof AppmainChatChatIdRoute
   AppmainHomeIndexRoute: typeof AppmainHomeIndexRoute
   AppmainKnowledgeIndexRoute: typeof AppmainKnowledgeIndexRoute
   AppmainMeetingIndexRoute: typeof AppmainMeetingIndexRoute
@@ -233,7 +233,7 @@ interface AppmainRouteRouteChildren {
 }
 
 const AppmainRouteRouteChildren: AppmainRouteRouteChildren = {
-  AppmainChatIndexRoute: AppmainChatIndexRoute,
+  AppmainChatChatIdRoute: AppmainChatChatIdRoute,
   AppmainHomeIndexRoute: AppmainHomeIndexRoute,
   AppmainKnowledgeIndexRoute: AppmainKnowledgeIndexRoute,
   AppmainMeetingIndexRoute: AppmainMeetingIndexRoute,
