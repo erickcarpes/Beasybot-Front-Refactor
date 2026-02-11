@@ -1,5 +1,6 @@
 import { X } from 'lucide-react';
 
+import { cn } from '@/utils/cn';
 import { formatFileSize, getFileType, ICONS_CONFIG } from '@/utils/fileUtils';
 
 // ============================================================================
@@ -7,6 +8,7 @@ import { formatFileSize, getFileType, ICONS_CONFIG } from '@/utils/fileUtils';
 // ============================================================================
 
 interface FileChipProps {
+  readonly className?: string;
   readonly file: File;
   readonly onRemove: (fileName: string) => void;
 }
@@ -15,12 +17,17 @@ interface FileChipProps {
 // Component
 // ============================================================================
 
-export default function FileChip({ file, onRemove }: FileChipProps) {
+export default function FileChip({ className, file, onRemove }: FileChipProps) {
   const fileType = getFileType(file.name);
   const { color, Icon } = ICONS_CONFIG[fileType];
 
   return (
-    <div className="component-gradient border-stroke-2 flex max-w-[220px] items-center gap-3 rounded-xl border px-3 py-2">
+    <div
+      className={cn(
+        'component-gradient border-stroke-2 flex max-w-[220px] items-center gap-3 rounded-xl border px-3 py-2',
+        className,
+      )}
+    >
       {/* File type icon */}
       <div
         className="flex size-10 shrink-0 items-center justify-center rounded-lg"
