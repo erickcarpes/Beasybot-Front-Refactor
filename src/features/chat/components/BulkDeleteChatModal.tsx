@@ -2,34 +2,26 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal/Index';
-import { useDeleteChats } from '@/features/chat';
 
 interface BulkDeleteChatModalProps {
   readonly ids: string[];
   readonly isOpen: boolean;
+  readonly isPending: boolean;
   readonly onClose: () => void;
-  readonly onSuccess: () => void;
+  readonly onConfirm: () => void;
 }
 
+/**
+ * Modal for confirming bulk deletion of chats.
+ * Pure presentational component that delegates logic to the parent.
+ */
 export default function BulkDeleteChatModal({
   ids,
   isOpen,
+  isPending,
   onClose,
-  onSuccess,
+  onConfirm,
 }: BulkDeleteChatModalProps) {
-  const { isPending, mutate: deleteChats } = useDeleteChats();
-
-  const handleDelete = () => {
-    if (ids.length === 0) return;
-
-    deleteChats(ids, {
-      onSuccess: () => {
-        onSuccess();
-        onClose();
-      },
-    });
-  };
-
   return (
     <AnimatePresence>
       {isOpen && (
@@ -62,7 +54,7 @@ export default function BulkDeleteChatModal({
                 </Button>
                 <Button
                   disabled={isPending}
-                  onClick={handleDelete}
+                  onClick={onConfirm}
                   size="medium"
                   type="button"
                   variant="destructive"

@@ -38,17 +38,14 @@ export const useUpdateChat = (id: string) => {
       const response = await api.put<Chat>(`/chat/${id}`, data);
       return response.data;
     },
-    mutationKey: ['chat', id],
   });
 };
 
-export const useDeleteChat = (id: string) => {
+export const useDeleteChat = () => {
   return useMutation({
-    mutationFn: async () => {
-      const response = await api.delete(`/chat/${id}`);
-      return response.data;
+    mutationFn: async (id: string) => {
+      await api.delete(`/chat/${id}`);
     },
-    mutationKey: ['chat', id],
   });
 };
 
@@ -57,6 +54,5 @@ export const useDeleteChats = () => {
     mutationFn: async (ids: string[]) => {
       await Promise.all(ids.map((id) => api.delete(`/chat/${id}`)));
     },
-    mutationKey: ['chats-bulk-delete'],
   });
 };
