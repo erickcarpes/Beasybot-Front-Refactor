@@ -42,7 +42,7 @@ export default function DropdownMenu({ items }: DropdownMenuProps) {
   return (
     <div className="relative" ref={ref}>
       <button
-        className="text-text-2 hover:bg-component-hover hover:text-text-1 rounded-m p-1 transition-colors"
+        className="text-text-2 hover:bg-component-hover hover:text-text-1 rounded-m cursor-pointer p-1 transition-colors"
         onClick={() => {
           setIsOpen(!isOpen);
         }}
@@ -63,7 +63,7 @@ export default function DropdownMenu({ items }: DropdownMenuProps) {
             {items.map((item, index) => (
               <button
                 className={cn(
-                  'flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors',
+                  'flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors',
                   item.variant === 'destructive'
                     ? 'text-fail-error hover:bg-fail-error/10'
                     : 'text-text-1 hover:bg-component-hover',
