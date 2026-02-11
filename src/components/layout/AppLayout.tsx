@@ -7,7 +7,7 @@ import MobileHeader from '@/components/sidebar/MobileHeader';
  * Layout principal da aplicação autenticada
  * Combina Sidebar + área de conteúdo
  */
-function AppLayout() {
+export default function AppLayout() {
   return (
     <SidebarProvider>
       <div className="bg-background flex h-screen overflow-hidden">
@@ -28,5 +28,3 @@ function AppLayout() {
     </SidebarProvider>
   );
 }
-
-export default AppLayout;
