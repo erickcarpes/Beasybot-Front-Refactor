@@ -38,8 +38,8 @@ interface SidebarMenuItemWithImage extends SidebarMenuItemBaseProps {
 /**
  * Item individual do menu da sidebar
  *
- * - Ativo (rota atual): borda esquerda verde
- * - Hover: borda esquerda cinza
+ * - Ativo (rota atual): borda direita verde
+ * - Hover: borda direita cinza
  */
 export default function SidebarMenuItem({ icon: Icon, iconSrc, label, to }: SidebarMenuItemProps) {
   const { closeMobile, isExpanded } = useSidebar();
@@ -55,7 +55,7 @@ export default function SidebarMenuItem({ icon: Icon, iconSrc, label, to }: Side
   return (
     <button
       className={cn(
-        'group rounded-m hover:bg-component-hover/30 flex w-full cursor-pointer items-center gap-3 border-r-2 px-3 py-2.5 transition-all',
+        'group rounded-m hover:bg-component-hover/30 flex w-full cursor-pointer items-center gap-3 border-r-2 px-3 py-2 transition-all',
         isExpanded ? 'justify-start' : 'justify-center',
         isActive ? 'border-green-500' : 'hover:border-stroke border-transparent',
       )}

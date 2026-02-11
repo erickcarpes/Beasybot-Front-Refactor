@@ -22,7 +22,7 @@ export default function MobileHeader() {
         <Menu size={22} />
       </button>
 
-      <img alt="Logo BBOX" src={logoBbox} />
+      <img alt="Logo BBOX" className="ml-2" src={logoBbox} />
     </header>
   );
 }

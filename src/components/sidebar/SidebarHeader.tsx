@@ -12,7 +12,7 @@ export default function SidebarHeader() {
   const { isExpanded, toggleExpanded } = useSidebar();
 
   return (
-    <div className="flex items-center justify-between px-5 py-12">
+    <div className="flex items-center justify-between px-5 pt-8 pb-10">
       <AnimatePresence mode="wait">
         {isExpanded ? (
           <motion.span

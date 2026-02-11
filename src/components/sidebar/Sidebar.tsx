@@ -10,12 +10,8 @@ import SidebarUser from './SidebarUser';
 // Constants
 // ============================================================================
 
-const SIDEBAR_WIDTH_EXPANDED = 280;
+const SIDEBAR_WIDTH_EXPANDED = 250;
 const SIDEBAR_WIDTH_COLLAPSED = 60;
-
-// ============================================================================
-// Component
-// ============================================================================
 
 /**
  * Sidebar principal da aplicação
