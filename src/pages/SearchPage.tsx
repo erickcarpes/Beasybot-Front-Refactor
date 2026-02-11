@@ -1,16 +1,18 @@
-import {
-  type ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import { Edit2, Search, Trash2 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { type ColumnDef } from '@tanstack/react-table';
+import { Edit2, Trash2 } from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
 
+import DataTable from '@/components/ui/DataTable';
 import DropdownMenu from '@/components/ui/DropdownMenu';
 import SearchBar from '@/components/ui/SearchBar';
-import { BulkDeleteChatModal, type Chat, useGetAllChats } from '@/features/chat';
+import { useToast } from '@/contexts/toastContext';
+import {
+  BulkDeleteChatModal,
+  type Chat,
+  useDeleteChat,
+  useDeleteChats,
+  useGetAllChats,
+} from '@/features/chat';
 import { cn } from '@/utils/cn';
 
 // ============================================================================
@@ -28,7 +30,51 @@ export default function SearchPage() {
   const [rowSelection, setRowSelection] = useState({});
   const [activeModal, setActiveModal] = useState<ModalState>(null);
 
-  const { data: chats = [], isLoading } = useGetAllChats();
+  const { data: chats = [], isLoading, refetch } = useGetAllChats();
+  const { mutateAsync: deleteChat } = useDeleteChat();
+  const { isPending: isDeleteChatsPending, mutate: deleteChats } = useDeleteChats();
+  const { showToast } = useToast();
+
+  // ============================================================================
+  // Handlers
+  // ============================================================================
+
+  /**
+   * Handles the bulk deletion of selected chats.
+   * Calls the mutation (with error/success hooks) and manages UI state.
+   */
+  const handleBulkDelete = () => {
+    deleteChats(selectedChatIds, {
+      onError: () => {
+        showToast('Erro ao excluir conversas.', 'error');
+      },
+      onSuccess: () => {
+        showToast('Conversas excluídas com sucesso!', 'success');
+        setRowSelection({});
+        setActiveModal(null);
+        void refetch();
+      },
+    });
+  };
+
+  /**
+   * Handles the deletion of a single chat.
+   * Memoized to prevent unnecessary re-renders of the table columns.
+   */
+  const handleSingleDelete = useCallback(
+    async (id: string) => {
+      await deleteChat(id, {
+        onError: () => {
+          showToast('Erro ao excluir conversa.', 'error');
+        },
+        onSuccess: () => {
+          showToast('Conversa excluída com sucesso!', 'success');
+          void refetch();
+        },
+      });
+    },
+    [deleteChat, refetch, showToast],
+  );
 
   const columns = useMemo<ColumnDef<Chat>[]>(
     () => [
@@ -37,7 +83,7 @@ export default function SearchPage() {
           <div className="flex justify-center">
             <input
               checked={row.getIsSelected()}
-              className="border-stroke-2 bg-component-pressed checked:bg-brand accent-brand size-4 cursor-pointer rounded checked:border-transparent focus:ring-0"
+              className="checked:bg-brand accent-brand size-4 cursor-pointer rounded checked:border-transparent focus:ring-0"
               disabled={!row.getCanSelect()}
               onChange={row.getToggleSelectedHandler()}
               type="checkbox"
@@ -48,7 +94,7 @@ export default function SearchPage() {
           <div className="flex justify-center">
             <input
               checked={table.getIsAllPageRowsSelected()}
-              className="border-stroke-2 bg-component-pressed checked:bg-brand accent-brand size-4 cursor-pointer rounded checked:border-transparent focus:ring-0"
+              className="checked:bg-brand accent-brand size-4 cursor-pointer rounded checked:border-transparent focus:ring-0"
               onChange={table.getToggleAllPageRowsSelectedHandler()}
               type="checkbox"
             />
@@ -107,19 +153,23 @@ export default function SearchPage() {
         header: 'Origem',
       },
       {
-        cell: () => (
+        cell: ({ row }) => (
           <div className="flex justify-end">
             <DropdownMenu
               items={[
                 {
                   icon: Edit2,
                   label: 'Renomear',
-                  onClick: () => {}, // TODO: Re-implement when modal is ready
+                  onClick: () => {
+                    // Implement rename
+                  },
                 },
                 {
                   icon: Trash2,
                   label: 'Excluir',
-                  onClick: () => {}, // TODO: Re-implement when modal is ready
+                  onClick: () => {
+                    void handleSingleDelete(row.original.id);
+                  },
                   variant: 'destructive',
                 },
               ]}
@@ -130,23 +180,8 @@ export default function SearchPage() {
         id: 'actions',
       },
     ],
-    [],
+    [handleSingleDelete],
   );
-
-  const table = useReactTable({
-    columns,
-    data: chats,
-    enableRowSelection: true,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getRowId: (row) => row.id,
-    onGlobalFilterChange: setGlobalFilter,
-    onRowSelectionChange: setRowSelection,
-    state: {
-      globalFilter,
-      rowSelection,
-    },
-  });
 
   const selectedChatIds = Object.keys(rowSelection);
 
@@ -154,68 +189,9 @@ export default function SearchPage() {
     setActiveModal(null);
   };
 
-  const handleBulkDeleteSuccess = () => {
-    setRowSelection({});
-  };
-
-  const renderContent = () => {
-    if (isLoading) {
-      return <div className="text-text-2 flex h-64 items-center justify-center">Carregando...</div>;
-    }
-
-    if (chats.length === 0) {
-      return (
-        <div className="text-text-2 flex h-64 flex-col items-center justify-center gap-2">
-          <Search className="opacity-50" size={32} />
-          <p>Nenhuma conversa encontrada.</p>
-        </div>
-      );
-    }
-
-    return (
-      <div className="w-full overflow-x-auto">
-        <table className="w-full border-collapse text-left">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr className="border-stroke-2 bg-component-default border-b" key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th
-                    className="text-text-2 px-6 py-4 text-sm font-medium whitespace-nowrap"
-                    key={header.id}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody className="divide-stroke-2 divide-y">
-            {table.getRowModel().rows.map((row) => (
-              <tr
-                className={cn(
-                  'group hover:bg-component-hover/20 transition-colors',
-                  row.getIsSelected() && 'bg-brand/5 hover:bg-brand/10',
-                )}
-                key={row.id}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <td className="px-6 py-4" key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  };
-
   return (
-    <div className="overflow-y-auto px-4 py-8 md:px-8 lg:py-12">
-      <div className="mx-auto w-full max-w-[1200px]">
+    <div className="flex h-full flex-col px-4 py-8 md:px-8 lg:py-12">
+      <div className="mx-auto flex h-full w-full max-w-[1200px] flex-col">
         {/* Header */}
         <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
@@ -243,17 +219,26 @@ export default function SearchPage() {
           </div>
         </div>
 
-        {/* Table / List */}
-        <div className="bg-component-default border-stroke-2 min-h-[400px] overflow-hidden rounded-xl border">
-          {renderContent()}
-        </div>
+        {/* Table */}
+        <DataTable
+          columns={columns}
+          data={chats}
+          emptyMessage="Nenhuma conversa encontrada."
+          getRowId={(row) => row.id}
+          globalFilter={globalFilter}
+          isLoading={isLoading}
+          onGlobalFilterChange={setGlobalFilter}
+          onRowSelectionChange={setRowSelection}
+          rowSelection={rowSelection}
+        />
       </div>
 
       <BulkDeleteChatModal
         ids={selectedChatIds}
         isOpen={activeModal?.type === 'BULK_DELETE'}
+        isPending={isDeleteChatsPending}
         onClose={handleCloseModal}
-        onSuccess={handleBulkDeleteSuccess}
+        onConfirm={handleBulkDelete}
       />
     </div>
   );
