@@ -141,3 +141,18 @@ export const useAuth = (): AuthContextValue => {
 
   return context;
 };
+
+/**
+ * Hook para acessar o usuário autenticado.
+ * Garante que o usuário existe, caso contrário lança um erro.
+ * Deve ser usado apenas em rotas protegidas/autenticadas.
+ */
+export const useCurrentUser = (): User => {
+  const { user } = useAuth();
+
+  if (!user) {
+    throw new Error('useCurrentUser must be used inside an authenticated route');
+  }
+
+  return user;
+};
