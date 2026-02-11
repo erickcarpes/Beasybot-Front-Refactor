@@ -8,7 +8,7 @@ import microsoftTeamsLogo from '@/assets/microsoft-teams-logo.svg';
 import zoomLogo from '@/assets/zoom-logo.svg';
 import ChatInput from '@/components/chat/ChatInput';
 import { useToast } from '@/contexts/toastContext';
-import { useAuth } from '@/contexts/user';
+import { useCurrentUser } from '@/contexts/user/userContext';
 import { ActionCard, SuggestionItem } from '@/features/home';
 
 // ============================================================================
@@ -62,11 +62,11 @@ const SUGGESTIONS = [
 // ============================================================================
 
 export default function HomePage() {
-  const { user } = useAuth();
+  const user = useCurrentUser();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
-  const displayName = user?.name ?? 'usuário';
+  const displayName = user.name ?? 'usuário';
 
   const handleChatSubmit = (data: { files: File[]; text: string }) => {
     void navigate({ search: { q: data.text }, to: '/app/chat' });
