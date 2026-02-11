@@ -1,4 +1,4 @@
-import { type SyntheticEvent, useCallback, useState } from 'react';
+import { type MouseEvent, type SyntheticEvent, useCallback, useState } from 'react';
 
 import Button from '@/components/ui/Button';
 import Checkbox from '@/components/ui/Checkbox';
@@ -52,7 +52,7 @@ export default function SignupForm() {
   }, []);
 
   const handleCheckboxClick = useCallback(
-    (event: React.MouseEvent<HTMLInputElement>) => {
+    (event: MouseEvent<HTMLInputElement>) => {
       if (!hasReadTerms) {
         event.preventDefault();
         setTermsOpen(true);
