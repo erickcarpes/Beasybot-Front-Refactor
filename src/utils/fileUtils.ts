@@ -51,6 +51,9 @@ export type FileType = keyof typeof ICONS_CONFIG;
 export const MAX_FILE_SIZE_MB = 100;
 export const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
+/**
+ * Helper function to format file size in bytes/KB/MB
+ */
 export const formatFileSize = (bytes: number): string => {
   if (bytes < 1024) return `${bytes.toString()} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
