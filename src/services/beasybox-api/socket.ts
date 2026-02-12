@@ -12,6 +12,7 @@ class SocketService {
   }
 
   public static getInstance(): SocketService {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!SocketService.instance) {
       SocketService.instance = new SocketService();
     }
@@ -22,7 +23,10 @@ class SocketService {
     if (this.socket?.connected) return;
 
     const token = getAccessToken();
-
+    if (!token) {
+      console.error('Cannot connect to socket: No access token available');
+      return;
+    }
     this.socket = io(this.baseURL, {
       auth: {
         token,
@@ -63,7 +67,7 @@ class SocketService {
       console.warn('Socket not initialized. Call connect() first.');
       return;
     }
-    this.socket.on(event, callback);
+    this.socket.on(event, callback as unknown as (...args: unknown[]) => void);
   }
 }
 
