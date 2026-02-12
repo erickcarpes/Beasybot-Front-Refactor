@@ -16,7 +16,7 @@ export const useFilesPage = ({ userId }: UseFilesPageProps) => {
   const [globalFilter, setGlobalFilter] = useState('');
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
 
-  const { data: files = [], isLoading, refetch } = useGetFilesByUserId(userId);
+  const { data: files = [], isLoading } = useGetFilesByUserId(userId);
   const { mutateAsync: deleteFile } = useDeleteFile();
   const { isPending: isDeleteFilesPending, mutate: deleteFiles } = useDeleteFiles();
   const { isPending: isCreateFilesPending, mutateAsync: createFiles } = useCreateFiles();
@@ -30,11 +30,10 @@ export const useFilesPage = ({ userId }: UseFilesPageProps) => {
         },
         onSuccess: () => {
           showToast('Arquivo excluído com sucesso!', 'success');
-          void refetch();
         },
       });
     },
-    [deleteFile, refetch, showToast],
+    [deleteFile, showToast],
   );
 
   const handleBulkDelete = useCallback(
@@ -47,12 +46,11 @@ export const useFilesPage = ({ userId }: UseFilesPageProps) => {
         onSuccess: () => {
           showToast('Arquivos excluídos com sucesso!', 'success');
           setRowSelection({});
-          void refetch();
           onSuccess?.();
         },
       });
     },
-    [deleteFiles, refetch, rowSelection, showToast],
+    [deleteFiles, rowSelection, showToast],
   );
 
   const handleCreateFiles = useCallback(
@@ -63,12 +61,11 @@ export const useFilesPage = ({ userId }: UseFilesPageProps) => {
         },
         onSuccess: () => {
           showToast('Arquivos enviados com sucesso!', 'success');
-          void refetch();
           onSuccess?.();
         },
       });
     },
-    [createFiles, refetch, showToast],
+    [createFiles, showToast],
   );
 
   return {

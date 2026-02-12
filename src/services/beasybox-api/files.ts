@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { api } from '@/services/beasybox-api';
 
@@ -21,6 +21,8 @@ export interface IFile {
 }
 
 export const useCreateFiles = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (files: File[]) => {
       const formData = new FormData();
@@ -34,6 +36,9 @@ export const useCreateFiles = () => {
       });
       return response.data;
     },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['files'] });
+    },
   });
 };
 
@@ -43,19 +48,26 @@ export const useGetFilesByUserId = (userId: string) => {
       const response = await api.get<IFile[]>(`/file/knowledge/${userId}`);
       return response.data;
     },
-    queryKey: ['files', userId],
+    queryKey: ['files'],
   });
 };
 
 export const useDeleteFile = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (id: string) => {
       await api.delete(`/file/${id}`);
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['files'] });
     },
   });
 };
 
 export const useDeleteFiles = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (ids: string[]) => {
       const response = await api.delete<DeleteFilesResponse>('files', {
@@ -64,6 +76,9 @@ export const useDeleteFiles = () => {
         },
       });
       return response.data;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['files'] });
     },
   });
 };
