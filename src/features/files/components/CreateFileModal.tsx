@@ -2,9 +2,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { CloudUpload } from 'lucide-react';
 import { useRef } from 'react';
 
-import FileChip from '@/components/chat/FileChip';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal/Index';
+import { FileChip } from '@/features/chat';
 import { cn } from '@/utils/cn';
 
 interface CreateFileModalProps {
