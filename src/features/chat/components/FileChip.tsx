@@ -1,5 +1,7 @@
 import { X } from 'lucide-react';
 
+import type { IFile } from '@/services/beasybox-api/files';
+
 import { cn } from '@/utils/cn';
 import { formatFileSize, getFileType, ICONS_CONFIG } from '@/utils/fileUtils';
 
@@ -9,8 +11,8 @@ import { formatFileSize, getFileType, ICONS_CONFIG } from '@/utils/fileUtils';
 
 interface FileChipProps {
   readonly className?: string;
-  readonly file: File;
-  readonly onRemove: (fileName: string) => void;
+  readonly file: File | IFile;
+  readonly onRemove?: (fileName: string) => void;
 }
 
 // ============================================================================
@@ -46,9 +48,13 @@ export default function FileChip({ className, file, onRemove }: FileChipProps) {
       <button
         aria-label={`Remover ${file.name}`}
         className="text-text-2 hover:text-text-1 shrink-0 cursor-pointer transition-colors"
-        onClick={() => {
-          onRemove(file.name);
-        }}
+        onClick={
+          onRemove
+            ? () => {
+                onRemove(file.name);
+              }
+            : undefined
+        }
         type="button"
       >
         <X size={14} />

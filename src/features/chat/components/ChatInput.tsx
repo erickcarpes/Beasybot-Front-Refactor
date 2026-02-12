@@ -142,7 +142,7 @@ export default function ChatInput({
             'group rounded-m flex size-6 cursor-pointer items-center justify-center p-1 transition-all',
             canSend || sending
               ? 'button-neutral-no-border bg-text-white text-component-default hover:bg-component-hover hover:text-white'
-              : 'bg-component-default text-text-2',
+              : 'bg-component-hover text-text-2 disabled:cursor-not-allowed',
           )}
           disabled={!canSend && !sending}
           onClick={sending ? onStop : handleSubmit}
