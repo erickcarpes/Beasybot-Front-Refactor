@@ -1,3 +1,4 @@
+import { useNavigate } from '@tanstack/react-router';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { useState } from 'react';
@@ -61,10 +62,6 @@ export default function SidebarConversations() {
   );
 }
 
-// ============================================================================
-// Sub-components
-// ============================================================================
-
 /**
  * Grupo colapsável de conversas por origem
  */
@@ -79,6 +76,7 @@ function ConversationGroup({
   readonly onSelectConversation: (id: string) => void;
   readonly origin: ChatOrigin;
 }) {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -126,10 +124,11 @@ function ConversationGroup({
                   key={conversation.id}
                   onClick={() => {
                     onSelectConversation(conversation.id);
+                    void navigate({ to: `/app/chat/${conversation.id}` });
                   }}
                   type="button"
                 >
-                  {conversation.name}
+                  {conversation.name.trim() ? conversation.name : 'Conversa sem nome'}
                 </button>
               );
             })}
