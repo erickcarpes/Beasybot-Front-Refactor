@@ -1,45 +1,63 @@
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
+import arrowLogo from '@/assets/arrow-logo.svg';
 import { type Message } from '@/services/beasybox-api/messages';
 import { cn } from '@/utils/cn';
 
-import FileChip from '@/components/chat/FileChip';
+import FileChip from './FileChip';
+import TypingIndicator from './TypingIndicator';
 
 interface MessageBubbleProps {
-  message: Message;
+  readonly isLast?: boolean;
+  readonly message: Message;
 }
 
-export default function MessageBubble({ message }: MessageBubbleProps) {
+export default function MessageBubble({ isLast, message }: MessageBubbleProps) {
   const isUser = message.author === 'USER';
+  const showBotIcon = !isUser && isLast;
+  const isThinking = message.text === 'Pensando...';
 
   return (
-    <div
-      className={cn(
-        'flex w-full flex-col gap-2',
-        isUser ? 'items-end' : 'items-start',
-      )}
-    >
+    <div className={cn('flex w-full flex-col gap-2', isUser ? 'items-end' : 'items-start')}>
       <div
         className={cn(
-          'max-w-[80%] rounded-2xl px-4 py-3 text-body-m',
-          isUser
-            ? 'bg-brand text-text-white rounded-tr-sm'
-            : 'bg-component-default text-text-1 rounded-tl-sm',
+          'flex max-w-[90%] justify-center gap-3',
+          isUser ? 'flex-row-reverse' : 'flex-row',
         )}
       >
-        {message.files.length > 0 && (
-            <div className="mb-2 flex flex-wrap gap-2">
-                {message.files.map((file) => (
-                    <FileChip key={file.id} file={file} className={isUser ? "bg-white/10 border-white/20 text-white" : ""} />
-                ))}
-            </div>
+        {!isUser && (
+          <div className="mt-1 flex h-6 w-6 shrink-0">
+            {showBotIcon && <img alt="Bot Indicator" className="h-5 w-5" src={arrowLogo} />}
+          </div>
         )}
-        <div className="whitespace-pre-wrap">{message.text}</div>
+
+        <div
+          className={cn(
+            'text-body-m rounded-2xl px-4 py-3',
+            isUser ? 'bg-component-default text-text-1 rounded-tr-sm' : 'text-text-1 w-full p-0',
+          )}
+        >
+          {message.files.length > 0 && (
+            <div className="mb-2 flex flex-wrap gap-2">
+              {message.files.map((file) => (
+                <FileChip
+                  className={isUser ? 'border-white/20 bg-white/10 text-white' : ''}
+                  file={file}
+                  key={file.id}
+                />
+              ))}
+            </div>
+          )}
+          {isThinking ? (
+            <TypingIndicator />
+          ) : (
+            <div className={`prose prose-invert max-w-none ${isUser ? 'text-text-1' : ''}`}>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.text}</ReactMarkdown>
+            </div>
+          )}
+        </div>
       </div>
-      <span className="text-body-s text-text-2 px-1">
-        {new Date(message.createdAt).toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        })}
-      </span>
     </div>
   );
 }
