@@ -52,6 +52,7 @@ export default tseslint.config(// Bloco 1: Configurações Globais e Presets
             args: false, // Desativa "args" -> "arguments"
             e: false, // Desativa "e" -> "error" ou e -> "event"
             utils: false, // Desativa "utils" -> "utilities"
+            temp: false, // Desativa "temp" -> "temporary"
           },
         },
       ],
