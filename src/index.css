@@ -1,10 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 @import 'tailwindcss';
+@plugin '@tailwindcss/typography';
 
 @layer theme, base, components, utilities;
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/preflight.css" layer(base);
-@import "tailwindcss/utilities.css" layer(utilities);
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'tailwindcss/utilities.css' layer(utilities);
 
 @theme {
   /* GERAL */
@@ -20,19 +21,26 @@
   --color-border-gray: #787878;
   --color-border-dark-gray: #363636;
   --color-border-dark-gray-2: #403e3e;
-  --color-border-button: linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0%, rgba(153, 153, 153, 0.00) 100%);
+  --color-border-button: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(153, 153, 153, 0) 100%
+  );
 
   /* BUTTON COLORS */
   --color-button-primary-default: #156634;
-  --color-button-primary: linear-gradient(90deg, rgba(204, 192, 192, 0.16) 0.48%, rgba(204, 192, 192, 0.00) 100%), #156634;
-  --color-button-primary-hover: #2F9157;
+  --color-button-primary:
+    linear-gradient(90deg, rgba(204, 192, 192, 0.16) 0.48%, rgba(204, 192, 192, 0) 100%), #156634;
+  --color-button-primary-hover: #2f9157;
   --color-button-primary-pressed: #1d743e;
 
-  --color-button-neutral: linear-gradient(90deg, rgba(129, 129, 129, 0.16) 0%, rgba(129, 129, 129, 0.00) 100%), #27272A;
+  --color-button-neutral:
+    linear-gradient(90deg, rgba(129, 129, 129, 0.16) 0%, rgba(129, 129, 129, 0) 100%), #27272a;
   --color-button-neutral-hover: #505050;
   --color-button-neutral-pressed: #1f1f22;
 
-  --color-button-destructive: linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.00) 100%), #C95252;
+  --color-button-destructive:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 100%), #c95252;
   --color-button-destructive-hover: #ff6a6a;
   --color-button-destructive-pressed: #9b3e3e;
 
@@ -48,9 +56,13 @@
 
   /* COMPONENT COLORS */
   --color-component-default: #27272a;
-  --color-component-gradient: linear-gradient(122deg, #27272A 7.78%, #181616 99.09%);
+  --color-component-gradient: linear-gradient(122deg, #27272a 7.78%, #181616 99.09%);
   --color-component-black-shade: #1d1c1d;
-  --color-component-sidebar: linear-gradient(313deg, var(--Surface-Color, #27272A) 8.41%, #181616 86.5%);
+  --color-component-sidebar: linear-gradient(
+    313deg,
+    var(--Surface-Color, #27272a) 8.41%,
+    #181616 86.5%
+  );
   --color-component-hover: #6b6b6b;
   --color-component-pressed: #3b3b3b;
 
@@ -105,24 +117,24 @@
   --color-fail-error: #d65e5e;
   --color-stroke-2: #403e3e;
   --color-stroke-3: #363636;
-  --color-component-pressed: #3B3B3B;
-  --color-component-hover: #6B6B6B;
+  --color-component-pressed: #3b3b3b;
+  --color-component-hover: #6b6b6b;
   --gradient-components: linear-gradient(122deg, #27272a 7.78%, #181616 99.09%);
-  --color-asideBar: linear-gradient(313deg,
-      var(--color-components) 8.41%,
-      #181616 86.5%);
+  --color-asideBar: linear-gradient(313deg, var(--color-components) 8.41%, #181616 86.5%);
   --color-stroke: #787878;
   --color-text-1: #d4d4d4;
   --color-text-2: #959595;
   --color-text-3: #24a254;
   --color-text-4: #14d35d;
   --color-text-5: #38a461;
-  --stroke-in-chat: linear-gradient(90deg,
-      rgba(36, 162, 84, 0) 10%,
-      #24a254 40%,
-      #5ad98a 50.48%,
-      #24a254 60%,
-      rgba(36, 162, 84, 0) 89.9%);
+  --stroke-in-chat: linear-gradient(
+    90deg,
+    rgba(36, 162, 84, 0) 10%,
+    #24a254 40%,
+    #5ad98a 50.48%,
+    #24a254 60%,
+    rgba(36, 162, 84, 0) 89.9%
+  );
 
   --font-family-primary: 'DM Sans', sans-serif;
 
@@ -153,25 +165,31 @@
 @layer components {
   .button-primary {
     background: var(--color-button-primary);
-    box-shadow: 0 6px 12px 0 rgba(28, 32, 32, 0.40), 0 0 0 1px #4AB476 inset;
+    box-shadow:
+      0 6px 12px 0 rgba(28, 32, 32, 0.4),
+      0 0 0 1px #4ab476 inset;
     @apply hover:bg-button-primary-hover active:bg-button-primary-pressed;
   }
 
   .button-neutral {
     background: var(--color-button-neutral);
-    box-shadow: 0 6px 12px 0 rgba(28, 32, 32, 0.60), 0 0 0 1px #696f6b inset;
+    box-shadow:
+      0 6px 12px 0 rgba(28, 32, 32, 0.6),
+      0 0 0 1px #696f6b inset;
     @apply hover:bg-button-neutral-hover active:bg-button-neutral-pressed;
   }
 
   .button-neutral-no-border {
     background: var(--color-button-neutral);
-    box-shadow: 0 6px 12px 0 rgba(28, 32, 32, 0.60);
+    box-shadow: 0 6px 12px 0 rgba(28, 32, 32, 0.6);
     @apply hover:bg-button-neutral-hover active:bg-button-neutral-pressed;
   }
 
   .button-destructive {
     background: var(--color-button-destructive);
-    box-shadow: 0 6px 12px 0 rgba(28, 32, 32, 0.60), 0 0 0 1px #696f6b inset;
+    box-shadow:
+      0 6px 12px 0 rgba(28, 32, 32, 0.6),
+      0 0 0 1px #696f6b inset;
     @apply hover:bg-button-destructive-hover active:bg-button-destructive-pressed;
   }
 
@@ -181,7 +199,7 @@
 
   .component-gradient {
     background: var(--color-component-gradient);
-    box-shadow: 6px 6px 12px 0 rgba(22, 21, 21, 0.60);
+    box-shadow: 6px 6px 12px 0 rgba(22, 21, 21, 0.6);
   }
 }
 
@@ -218,13 +236,21 @@
   }
 
   @keyframes shake {
-    0%, 100% {
+    0%,
+    100% {
       transform: translateX(0);
     }
-    10%, 30%, 50%, 70%, 90% {
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
       transform: translateX(-4px);
     }
-    20%, 40%, 60%, 80% {
+    20%,
+    40%,
+    60%,
+    80% {
       transform: translateX(4px);
     }
   }
@@ -703,8 +729,34 @@ h1 {
   color: var(--color-green-accent);
 }
 
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* GLOBAL SCROLLBAR STYLES */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #403e3e; /* var(--color-stroke-2) */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6b6b6b; /* var(--color-component-hover) */
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #403e3e transparent;
 }
