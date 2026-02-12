@@ -176,58 +176,60 @@ export default function KnowledgePage() {
   );
 
   return (
-    <div className="flex h-full flex-col px-4 py-8 md:px-8 lg:py-12">
-      <div className="mx-auto flex h-full w-full max-w-[1200px] flex-col">
-        {/* Header */}
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-subtitle-m text-text-white font-semibold">Meus arquivos</h1>
-            <p className="text-body-s text-text-2 mt-1">Gerencie seus arquivos e documentos</p>
-          </div>
-
-          <div className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row sm:items-center">
-            {selectedFileIds.length > 0 ? (
-              <button
-                className="bg-fail-error/10 text-fail-error hover:bg-fail-error/20 flex cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors"
-                onClick={() => {
-                  openModal('BULK_DELETE');
-                }}
-                type="button"
-              >
-                <Trash2 size={18} />
-                Excluir ({selectedFileIds.length})
-              </button>
-            ) : null}
-
-            <div className="relative w-full sm:w-[320px]">
-              <SearchBar onSearch={setGlobalFilter} placeholder="Buscar arquivo..." />
+    <div className="flex h-full w-full flex-col overflow-y-auto">
+      <div className="flex min-h-full w-full flex-col px-4 py-8 md:px-8 lg:py-12">
+        <div className="mx-auto flex h-full w-full max-w-[1200px] flex-col">
+          {/* Header */}
+          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h1 className="text-subtitle-m text-text-white font-semibold">Meus arquivos</h1>
+              <p className="text-body-s text-text-2 mt-1">Gerencie seus arquivos e documentos</p>
             </div>
 
-            <Button
-              className="hidden md:flex"
-              onClick={() => {
-                openModal('CREATE_FILE');
-              }}
-              size="medium"
-              variant="primary"
-            >
-              Adicionar arquivos
-            </Button>
-          </div>
-        </div>
+            <div className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row sm:items-center">
+              {selectedFileIds.length > 0 ? (
+                <button
+                  className="bg-fail-error/10 text-fail-error hover:bg-fail-error/20 flex cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors"
+                  onClick={() => {
+                    openModal('BULK_DELETE');
+                  }}
+                  type="button"
+                >
+                  <Trash2 size={18} />
+                  Excluir ({selectedFileIds.length})
+                </button>
+              ) : null}
 
-        {/* Table */}
-        <DataTable
-          columns={columns}
-          data={files}
-          emptyMessage="Nenhum arquivo encontrado."
-          getRowId={(row) => row.id}
-          globalFilter={globalFilter}
-          isLoading={isLoading}
-          onGlobalFilterChange={setGlobalFilter}
-          onRowSelectionChange={setRowSelection}
-          rowSelection={rowSelection}
-        />
+              <div className="relative w-full sm:w-[320px]">
+                <SearchBar onSearch={setGlobalFilter} placeholder="Buscar arquivo..." />
+              </div>
+
+              <Button
+                className="hidden md:flex"
+                onClick={() => {
+                  openModal('CREATE_FILE');
+                }}
+                size="medium"
+                variant="primary"
+              >
+                Adicionar arquivos
+              </Button>
+            </div>
+          </div>
+
+          {/* Table */}
+          <DataTable
+            columns={columns}
+            data={files}
+            emptyMessage="Nenhum arquivo encontrado."
+            getRowId={(row) => row.id}
+            globalFilter={globalFilter}
+            isLoading={isLoading}
+            onGlobalFilterChange={setGlobalFilter}
+            onRowSelectionChange={setRowSelection}
+            rowSelection={rowSelection}
+          />
+        </div>
       </div>
 
       <BulkDeleteFilesModal
