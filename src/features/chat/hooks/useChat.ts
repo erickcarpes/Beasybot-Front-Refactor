@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import type { IFile } from '@/services/beasybox-api/files';
 import type { Message } from '@/services/beasybox-api/messages';
+
+import { useGetAllMessages } from '@/services/beasybox-api/messages';
 import socketService from '@/services/beasybox-api/socket';
 
 interface UseChatProps {
@@ -15,116 +17,135 @@ interface UseChatReturn {
   sendMessage: (text: string, files: IFile[]) => void;
 }
 
-export function useChat({ chatId, userId }: UseChatProps): UseChatReturn {
+export const useChat = ({ chatId, userId }: UseChatProps): UseChatReturn => {
+  const { data: initialMessages, isLoading: isLoadingInitialMessages } = useGetAllMessages(chatId);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const messagesRef = useRef<Message[]>([]);
 
-  // Keep ref in sync with state to access latest messages in socket listeners
+  // Sync initial messages when they load or when chat changes
   useEffect(() => {
-    messagesRef.current = messages;
-  }, [messages]);
+    if (initialMessages) {
+      setMessages(initialMessages);
+    }
+  }, [initialMessages]);
+
+  const handleMessageConfirmed = useCallback(
+    ({ tempUserId, userMessage }: { tempUserId: string; userMessage: Message }) => {
+      setMessages((previous) =>
+        previous.map((message) =>
+          message.id === tempUserId ? { ...userMessage, status: 'RECEIVED' } : message,
+        ),
+      );
+    },
+    [],
+  );
+
+  const handleChatResponse = useCallback(
+    ({ chunkMessage, tempBotId }: { chunkMessage: { text: string }; tempBotId?: string }) => {
+      setMessages((previous) => {
+        const lastMessage = previous.at(-1);
+
+        if (lastMessage?.author === 'BOT') {
+          const isThinking = lastMessage.text === 'Pensando...';
+          const newText = isThinking ? chunkMessage.text : lastMessage.text + chunkMessage.text;
+
+          return [
+            ...previous.slice(0, -1),
+            {
+              ...lastMessage,
+              isStreaming: true,
+              text: newText,
+            },
+          ];
+        }
+
+        return [
+          ...previous,
+          {
+            author: 'BOT',
+            chatId,
+            createdAt: new Date(),
+            files: [],
+            id: tempBotId,
+            isStreaming: true,
+            status: 'RECEIVED',
+            text: chunkMessage.text,
+          },
+        ];
+      });
+      setIsLoading(false);
+    },
+    [chatId],
+  );
+
+  const handleMessageCreated = useCallback(({ botMessage }: { botMessage: Message }) => {
+    setMessages((previous) => {
+      const lastMessage = previous.at(-1);
+      // Check if we were streaming this message (by ID or if last was BOT and streaming)
+      // Ideally check ID, but here usage is simple.
+      if (lastMessage?.author === 'BOT' && lastMessage.isStreaming) {
+        return [...previous.slice(0, -1), botMessage];
+      }
+      return [...previous, botMessage];
+    });
+    setIsLoading(false);
+  }, []);
 
   useEffect(() => {
     if (!chatId || !userId) return;
 
-    // Connect and join chat
     socketService.connect();
     socketService.emit('joinChat', { chatId, userId });
-    setIsLoading(true);
-
-    // Socket event listeners
-    const handleMessageConfirmed = (userMessage: Message) => {
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === userMessage.id || (msg.createdAt === userMessage.createdAt && msg.text === userMessage.text)
-            ? { ...userMessage, status: 'RECEIVED' }
-            : msg,
-        ),
-      );
-    };
-
-    const handleChatResponse = (data: { chunkMessage: { text: string }; messageId?: string }) => {
-      // Logic to append chunk to the last message (bot message)
-      setMessages((prev) => {
-        const lastMessage = prev[prev.length - 1];
-        if (lastMessage && lastMessage.author === 'AGENT') {
-          return [
-            ...prev.slice(0, -1),
-            { ...lastMessage, text: lastMessage.text + data.chunkMessage.text },
-          ];
-        } else {
-          // If no agent message exists yet, create one
-           return [
-            ...prev,
-            {
-              author: 'AGENT',
-              chatId,
-              createdAt: new Date(),
-              files: [],
-              status: 'RECEIVED',
-              text: data.chunkMessage.text,
-              id: data.messageId, // Optional if backend sends it
-            },
-          ];
-        }
-      });
-      setIsLoading(false);
-    };
-
-    const handleMessageCreated = (botMessage: Message) => {
-      // Replace the streaming message with the final message or just add it if not exists
-       setMessages((prev) => {
-        // Check if we were streaming this message
-        const lastMessage = prev[prev.length - 1];
-        if (lastMessage && lastMessage.author === 'AGENT') {
-             return [...prev.slice(0, -1), botMessage];
-        }
-        return [...prev, botMessage];
-      });
-      setIsLoading(false);
-    };
 
     socketService.on('messageConfirmed', handleMessageConfirmed);
     socketService.on('chatResponse', handleChatResponse);
     socketService.on('messageCreated', handleMessageCreated);
 
-    // Cleanup
     return () => {
       socketService.off('messageConfirmed');
       socketService.off('chatResponse');
       socketService.off('messageCreated');
-      // optional: socketService.disconnect() if we want to close connection on unmount
-      // but usually we keep it open for SPA navigation
     };
-  }, [chatId, userId]);
+  }, [chatId, userId, handleMessageConfirmed, handleChatResponse, handleMessageCreated]);
 
   const sendMessage = (text: string, files: IFile[]) => {
-    // Optimistic update
-    const tempId = crypto.randomUUID();
-    const optimisticMessage: Message = {
+    const optimisticUserMessage: Message = {
       author: 'USER',
       chatId,
       createdAt: new Date(),
       files,
-      id: tempId,
-      status: 'ANSWERED', // Initial status, will update to RECEIVED on confirmation
+      id: crypto.randomUUID(),
+      status: 'ANSWERED',
       text,
     };
 
-    setMessages((prev) => [...prev, optimisticMessage]);
+    const optimisticBotMessage: Message = {
+      author: 'BOT',
+      chatId,
+      createdAt: new Date(),
+      files: [],
+      id: crypto.randomUUID(),
+      isStreaming: true,
+      status: 'RECEIVED',
+      text: 'Pensando...',
+    };
+
+    setMessages((previous) => [...previous, optimisticUserMessage, optimisticBotMessage]);
+    setIsLoading(true); // Set loading to true while waiting for response/stream
 
     socketService.emit('sendMessage', {
       chatId,
       filesId: files.map((f) => f.id),
+      tempBotId: optimisticBotMessage.id,
+      tempUserId: optimisticUserMessage.id,
       text,
       userId,
     });
   };
 
   return {
-    isLoading,
+    isLoading: isLoading || isLoadingInitialMessages,
     messages,
     sendMessage,
   };
-}
+};
