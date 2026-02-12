@@ -30,7 +30,7 @@ export default function SearchPage() {
   const [rowSelection, setRowSelection] = useState({});
   const [activeModal, setActiveModal] = useState<ModalState>(null);
 
-  const { data: chats = [], isLoading, refetch } = useGetAllChats();
+  const { data: chats = [], isLoading } = useGetAllChats();
   const { mutateAsync: deleteChat } = useDeleteChat();
   const { isPending: isDeleteChatsPending, mutate: deleteChats } = useDeleteChats();
   const { showToast } = useToast();
@@ -52,7 +52,6 @@ export default function SearchPage() {
         showToast('Conversas excluídas com sucesso!', 'success');
         setRowSelection({});
         setActiveModal(null);
-        void refetch();
       },
     });
   };
@@ -69,11 +68,10 @@ export default function SearchPage() {
         },
         onSuccess: () => {
           showToast('Conversa excluída com sucesso!', 'success');
-          void refetch();
         },
       });
     },
-    [deleteChat, refetch, showToast],
+    [deleteChat, showToast],
   );
 
   const columns = useMemo<ColumnDef<Chat>[]>(
@@ -190,47 +188,49 @@ export default function SearchPage() {
   };
 
   return (
-    <div className="flex h-full flex-col px-4 py-8 md:px-8 lg:py-12">
-      <div className="mx-auto flex h-full w-full max-w-[1200px] flex-col">
-        {/* Header */}
-        <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h1 className="text-subtitle-m text-text-white font-semibold">Minhas conversas</h1>
-            <p className="text-body-s text-text-2 mt-1">Gerencie suas conversas e históricos</p>
-          </div>
+    <div className="flex h-full w-full flex-col overflow-y-auto">
+      <div className="flex min-h-full w-full flex-col px-4 py-8 md:px-8 lg:py-12">
+        <div className="mx-auto flex h-full w-full max-w-[1200px] flex-col">
+          {/* Header */}
+          <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div>
+              <h1 className="text-subtitle-m text-text-white font-semibold">Minhas conversas</h1>
+              <p className="text-body-s text-text-2 mt-1">Gerencie suas conversas e históricos</p>
+            </div>
 
-          <div className="flex w-full items-center gap-4 md:w-auto">
-            {selectedChatIds.length > 0 && (
-              <button
-                className="bg-fail-error/10 text-fail-error hover:bg-fail-error/20 flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors"
-                onClick={() => {
-                  setActiveModal({ type: 'BULK_DELETE' });
-                }}
-                type="button"
-              >
-                <Trash2 size={18} />
-                Excluir ({selectedChatIds.length})
-              </button>
-            )}
+            <div className="flex w-full items-center gap-4 md:w-auto">
+              {selectedChatIds.length > 0 && (
+                <button
+                  className="bg-fail-error/10 text-fail-error hover:bg-fail-error/20 flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors"
+                  onClick={() => {
+                    setActiveModal({ type: 'BULK_DELETE' });
+                  }}
+                  type="button"
+                >
+                  <Trash2 size={18} />
+                  Excluir ({selectedChatIds.length})
+                </button>
+              )}
 
-            <div className="relative w-full md:w-[320px]">
-              <SearchBar onSearch={setGlobalFilter} placeholder="Buscar conversa..." />
+              <div className="relative w-full md:w-[320px]">
+                <SearchBar onSearch={setGlobalFilter} placeholder="Buscar conversa..." />
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Table */}
-        <DataTable
-          columns={columns}
-          data={chats}
-          emptyMessage="Nenhuma conversa encontrada."
-          getRowId={(row) => row.id}
-          globalFilter={globalFilter}
-          isLoading={isLoading}
-          onGlobalFilterChange={setGlobalFilter}
-          onRowSelectionChange={setRowSelection}
-          rowSelection={rowSelection}
-        />
+          {/* Table */}
+          <DataTable
+            columns={columns}
+            data={chats}
+            emptyMessage="Nenhuma conversa encontrada."
+            getRowId={(row) => row.id}
+            globalFilter={globalFilter}
+            isLoading={isLoading}
+            onGlobalFilterChange={setGlobalFilter}
+            onRowSelectionChange={setRowSelection}
+            rowSelection={rowSelection}
+          />
+        </div>
       </div>
 
       <BulkDeleteChatModal
