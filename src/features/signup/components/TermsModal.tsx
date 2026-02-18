@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import Button from '@/components/ui/Button';
-import Modal from '@/components/ui/Modal/Index';
+import Modal from '@/components/ui/Modal';
 import { cn } from '@/utils/cn';
 
 import { TERMS_FOOTER, TERMS_LAST_UPDATED, TERMS_SECTIONS } from '../constants/termsContent';
