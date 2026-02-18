@@ -1,11 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { CloudUpload } from 'lucide-react';
-import { useRef } from 'react';
 
 import Button from '@/components/ui/Button';
-import Modal from '@/components/ui/Modal/Index';
+import Dropzone from '@/components/ui/Dropzone';
+import Modal from '@/components/ui/Modal';
 import { FileChip } from '@/features/chat';
-import { cn } from '@/utils/cn';
 
 interface CreateFileModalProps {
   readonly dragHandlers: {
@@ -34,8 +32,6 @@ export default function CreateFileModal({
   onRemoveFile,
   onSubmit,
 }: CreateFileModalProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   return (
     <AnimatePresence>
       {isOpen && (
@@ -56,33 +52,11 @@ export default function CreateFileModal({
               </Modal.Description>
 
               <div className="flex w-full flex-col gap-4">
-                {/* Dropzone */}
-                <div
-                  className={cn(
-                    'border-stroke-2 hover:bg-component-hover group flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-4 py-8 transition-colors',
-                    isDragging && 'border-brand bg-brand/5',
-                  )}
-                  onClick={() => fileInputRef.current?.click()}
-                  {...dragHandlers}
-                >
-                  <div className="bg-component-default group-hover:bg-component-pressed mb-3 flex size-12 items-center justify-center rounded-full transition-colors">
-                    <CloudUpload className="text-text-2 group-hover:text-text-1" size={24} />
-                  </div>
-                  <p className="text-body-m text-text-1 font-medium">
-                    Clique para fazer upload ou arraste e solte
-                  </p>
-                  <p className="text-body-s text-text-2 mt-1">SVG, PNG, JPG ou GIF (max. 100MB)</p>
-                  <input
-                    className="hidden"
-                    multiple
-                    onChange={(e) => {
-                      onAddFiles(e.target.files);
-                      e.target.value = '';
-                    }}
-                    ref={fileInputRef}
-                    type="file"
-                  />
-                </div>
+                <Dropzone
+                  dragHandlers={dragHandlers}
+                  isDragging={isDragging}
+                  onAddFiles={onAddFiles}
+                />
 
                 {/* File List */}
                 {files.length > 0 && (

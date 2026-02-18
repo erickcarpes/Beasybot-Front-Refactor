@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 
 import Button from '@/components/ui/Button';
-import Modal from '@/components/ui/Modal/Index';
+import Modal from '@/components/ui/Modal';
 
 interface BulkDeleteFilesModalProps {
   readonly ids: string[];
