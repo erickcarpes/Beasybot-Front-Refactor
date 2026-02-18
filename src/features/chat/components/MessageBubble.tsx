@@ -35,7 +35,9 @@ export default function MessageBubble({ isLast, message }: MessageBubbleProps) {
         <div
           className={cn(
             'text-body-m rounded-2xl px-4 py-3',
-            isUser ? 'bg-component-default text-text-1 rounded-tr-sm' : 'text-text-1 w-full p-0',
+            isUser
+              ? 'bg-component-default text-text-1 rounded-tr-sm'
+              : 'text-text-1 flex w-full p-0',
           )}
         >
           {message.files.length > 0 && (

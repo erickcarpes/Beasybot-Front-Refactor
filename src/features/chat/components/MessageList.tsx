@@ -31,7 +31,7 @@ export default function MessageList({ isLoading, messages }: MessageListProps) {
         messages.map((message, index) => (
           <MessageBubble
             isLast={index === messages.length - 1}
-            key={message.id ?? `${message.createdAt.toDateString()}-${index.toString()}`} // Fallback key if id is missing temporarily
+            key={message.id ?? `${message.createdAt.toDateString()}-${index.toString()}`}
             message={message}
           />
         ))

@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 
 export default function TypingIndicator() {
   return (
-    <div className="flex items-center justify-center space-x-1 p-1">
+    <div className="flex flex-1 items-center justify-center space-x-1 p-1">
       <motion.div
         animate={{ scale: [1, 1.2, 1] }}
         className="h-2 w-2 rounded-full bg-gray-400"
