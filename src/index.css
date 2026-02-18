@@ -271,6 +271,20 @@
     animation: shake 0.4s ease-in-out;
   }
 
+  @keyframes wiggle {
+    0%,
+    100% {
+      transform: rotate(-3deg);
+    }
+    50% {
+      transform: rotate(3deg);
+    }
+  }
+
+  .animate-wiggle {
+    animation: wiggle 1s ease-in-out infinite;
+  }
+
   /* Scrollbar styling for modals */
   .scrollbar-thin::-webkit-scrollbar {
     width: 6px;
