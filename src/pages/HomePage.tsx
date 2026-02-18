@@ -1,77 +1,24 @@
 import { useNavigate } from '@tanstack/react-router';
 import Lottie from 'lottie-react';
-import { FileText, Sparkles, Video } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
-import googleMeetLogo from '@/assets/google-meet-logo.svg';
 import loadingBotAnimation from '@/assets/loading-bot-message.json';
-import microsoftTeamsLogo from '@/assets/microsoft-teams-logo.svg';
-import zoomLogo from '@/assets/zoom-logo.svg';
 import { useToast } from '@/contexts/toastContext';
 import { useCurrentUser } from '@/contexts/user/userContext';
 import { useCreateChat } from '@/features/chat';
 import { ChatInput } from '@/features/chat';
-import { ActionCard, SuggestionItem } from '@/features/home';
-
-// ============================================================================
-// Constants
-// ============================================================================
-
-const ACTIONS = [
-  {
-    description: 'Adicione arquivos para aumentar o contexto da sua empresa',
-    icon: <FileText className="text-text-gray" size={24} />,
-    title: 'Salvar documento',
-    to: '/app/knowledge',
-  },
-  {
-    description: 'Grave uma reunião em diferentes plataformas online e acesse a qualquer momento.',
-    icon: (
-      <div className="flex items-center gap-1.5">
-        <img alt="Google Meet" src={googleMeetLogo} />
-        <img alt="Microsoft Teams" src={microsoftTeamsLogo} />
-        <img alt="Zoom" src={zoomLogo} />
-      </div>
-    ),
-    title: 'Gravar Reunião',
-    to: '/app/meeting',
-  },
-  {
-    description: 'Faça upload de reuniões pré gravadas e acesse a qualquer momento.',
-    icon: <Video className="text-text-gray" size={24} />,
-    title: 'Importar Reunião',
-    to: '/app/meeting',
-  },
-] as const;
-
-const SUGGESTIONS = [
-  {
-    description: 'Esta é uma sugestão personalizada de acordo com o seu negócio.',
-    title: 'Planejar campanha de marketing',
-  },
-  {
-    description: 'Esta é uma sugestão personalizada de acordo com o seu negócio.',
-    title: 'Realizar planejamento de gastos da empresa',
-  },
-  {
-    description: 'Esta é uma sugestão personalizada de acordo com o seu negócio.',
-    title: 'Analisar funil de vendas',
-  },
-] as const;
-
-// ============================================================================
-// Component
-// ============================================================================
+import { ActionCard, HOME_ACTIONS, HOME_SUGGESTIONS, SuggestionItem } from '@/features/home';
 
 export default function HomePage() {
   const user = useCurrentUser();
   const { showToast } = useToast();
   const navigate = useNavigate();
-  const { isPending, mutate: createChat } = useCreateChat();
+  const { isPending, mutateAsync: createChat } = useCreateChat();
 
   const displayName = user.name ?? 'usuário';
 
-  const handleChatSubmit = (data: { files: File[]; text: string }) => {
-    createChat(
+  const handleChatSubmit = async (data: { files: File[]; text: string }) => {
+    await createChat(
       {
         name: data.text.slice(0, 50), // Optional initial name based on message
         origin: 'WEB',
@@ -127,7 +74,7 @@ export default function HomePage() {
             <h2 className="text-body-l text-text-white font-semibold">Ações</h2>
 
             <div className="flex flex-col gap-4 md:flex-row">
-              {ACTIONS.map((action) => (
+              {HOME_ACTIONS.map((action) => (
                 <ActionCard
                   description={action.description}
                   icon={action.icon}
@@ -147,7 +94,7 @@ export default function HomePage() {
             </div>
 
             <div className="flex flex-col gap-3">
-              {SUGGESTIONS.map((suggestion) => (
+              {HOME_SUGGESTIONS.map((suggestion) => (
                 <SuggestionItem
                   description={suggestion.description}
                   disabled
