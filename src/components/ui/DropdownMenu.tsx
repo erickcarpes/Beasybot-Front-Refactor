@@ -43,7 +43,8 @@ export default function DropdownMenu({ items }: DropdownMenuProps) {
     <div className="relative" ref={ref}>
       <button
         className="text-text-2 hover:bg-component-hover hover:text-text-1 rounded-m cursor-pointer p-1 transition-colors"
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           setIsOpen(!isOpen);
         }}
         type="button"
@@ -69,7 +70,8 @@ export default function DropdownMenu({ items }: DropdownMenuProps) {
                     : 'text-text-1 hover:bg-component-hover',
                 )}
                 key={index}
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   setIsOpen(false);
                   item.onClick();
                 }}
