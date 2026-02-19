@@ -6,12 +6,14 @@ import zoomLogo from '@/assets/zoom-logo.svg';
 
 export const HOME_ACTIONS = [
   {
+    action: 'create-file',
     description: 'Adicione arquivos para aumentar o contexto da sua empresa',
     icon: <FileText className="text-text-gray" size={24} />,
     title: 'Salvar documento',
     to: '/app/knowledge',
   },
   {
+    action: 'record-meeting',
     description: 'Grave uma reunião em diferentes plataformas online e acesse a qualquer momento.',
     icon: (
       <div className="flex items-center gap-1.5">
@@ -24,6 +26,7 @@ export const HOME_ACTIONS = [
     to: '/app/meeting',
   },
   {
+    action: 'import-meeting',
     description: 'Faça upload de reuniões pré gravadas e acesse a qualquer momento.',
     icon: <Video className="text-text-gray" size={24} />,
     title: 'Importar Reunião',
