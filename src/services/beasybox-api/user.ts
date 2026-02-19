@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import api from './api';
 
@@ -31,6 +31,14 @@ export const fetchUser = async (userId: string): Promise<User> => {
   return response.data;
 };
 
+/**
+ * Atualiza os dados do usuário
+ */
+export const updateUser = async (userId: string, data: Partial<User>): Promise<User> => {
+  const response = await api.patch<User>(`/user/${userId}`, data);
+  return response.data;
+};
+
 // ============================================================================
 // React Query Hooks
 // ============================================================================
@@ -49,5 +57,21 @@ export const useUser = ({ userId }: UseUserOptions) => {
     queryFn: () => fetchUser(userId),
     queryKey: ['user', userId],
     staleTime: 5 * 60 * 1000, // 5 minutos
+  });
+};
+
+interface DeleteUserRequest {
+  id: string;
+}
+
+/**
+ * Hook para deletar um usuário
+ */
+export const useDeleteUser = () => {
+  return useMutation({
+    mutationFn: async ({ id }: DeleteUserRequest) => {
+      const response = await api.delete<boolean>(`/user/${id}`);
+      return response.data;
+    },
   });
 };
