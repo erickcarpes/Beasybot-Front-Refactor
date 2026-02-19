@@ -1,7 +1,8 @@
-import { type SyntheticEvent, useCallback } from 'react';
+import { type SyntheticEvent, useCallback, useState } from 'react';
 
 import Button from '@/components/ui/Button';
 import InputLabel from '@/components/ui/InputLabel';
+import { ForgotPasswordFlow } from '@/features/forgot-password';
 
 import { useLoginFlow } from '../hooks/useLoginFlow';
 import LoginFooter from './LoginFooter';
@@ -9,6 +10,7 @@ import LoginHeader from './LoginHeader';
 
 export default function LoginForm() {
   const { errors, handleSubmit, isPending, isValid, onSubmit, register } = useLoginFlow();
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
 
   const handleFormSubmit = useCallback(
     (event: SyntheticEvent<HTMLFormElement>) => {
@@ -36,7 +38,13 @@ export default function LoginForm() {
           id="password"
           label="Senha"
           labelAction={
-            <button className="text-brand text-body-s cursor-pointer hover:underline" type="button">
+            <button
+              className="text-brand text-body-s cursor-pointer hover:underline"
+              onClick={() => {
+                setIsForgotPasswordOpen(true);
+              }}
+              type="button"
+            >
               Esqueceu a senha?
             </button>
           }
@@ -57,6 +65,13 @@ export default function LoginForm() {
       </form>
 
       <LoginFooter />
+
+      <ForgotPasswordFlow
+        isOpen={isForgotPasswordOpen}
+        onClose={() => {
+          setIsForgotPasswordOpen(false);
+        }}
+      />
     </main>
   );
 }
