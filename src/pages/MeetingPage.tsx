@@ -1,4 +1,5 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useNavigate, useSearch } from '@tanstack/react-router';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import Button from '@/components/ui/Button';
 import SearchBar from '@/components/ui/SearchBar';
@@ -12,12 +13,39 @@ import {
   useMeetings,
 } from '@/features/meeting';
 
+type ModalTab = 'IMPORT' | 'RECORD';
+
 export default function MeetingPage() {
   const user = useCurrentUser();
   const { createMeeting, deleteMeeting, isLoading, meetings } = useMeetings(user.id);
+
+  const navigate = useNavigate();
+  const { action } = useSearch({ from: '/app/(main)/meeting/' });
+
+  // Snapshot the initial action so re-renders from navigate don't cancel the timer
+  const initialAction = useRef(action);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [initialTab, setInitialTab] = useState<ModalTab>(
+    initialAction.current === 'import-meeting' ? 'IMPORT' : 'RECORD',
+  );
   const [searchFilter, setSearchFilter] = useState('');
   const [selectedMeeting, setSelectedMeeting] = useState<Meeting | null>(null);
+
+  // Open modal with a small delay so the page renders first and the modal fades in smoothly
+  useEffect(() => {
+    const pendingAction = initialAction.current;
+    if (pendingAction === 'record-meeting' || pendingAction === 'import-meeting') {
+      void navigate({ replace: true, search: {}, to: '.' });
+      const timer = setTimeout(() => {
+        setIsModalOpen(true);
+      }, 250);
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const filteredMeetings = useMemo(() => {
     if (!searchFilter.trim()) return meetings;
@@ -30,6 +58,11 @@ export default function MeetingPage() {
   const handleViewMeeting = useCallback((meeting: Meeting) => {
     setSelectedMeeting(meeting);
   }, []);
+
+  const handleOpenModal = () => {
+    setInitialTab('RECORD');
+    setIsModalOpen(true);
+  };
 
   const layoutContent = useMemo(() => {
     if (isLoading) {
@@ -47,13 +80,7 @@ export default function MeetingPage() {
           <p className="text-body-xs text-color-2">
             Clique em &quot;Salvar reunião&quot; para começar a gravar.
           </p>
-          <Button
-            onClick={() => {
-              setIsModalOpen(true);
-            }}
-            size="medium"
-            variant="primary"
-          >
+          <Button onClick={handleOpenModal} size="medium" variant="primary">
             Salvar reunião
           </Button>
         </div>
@@ -91,13 +118,7 @@ export default function MeetingPage() {
                 <SearchBar onSearch={setSearchFilter} placeholder="Buscar reunião..." />
               </div>
 
-              <Button
-                onClick={() => {
-                  setIsModalOpen(true);
-                }}
-                size="medium"
-                variant="primary"
-              >
+              <Button onClick={handleOpenModal} size="medium" variant="primary">
                 Salvar reunião
               </Button>
             </div>
@@ -108,6 +129,7 @@ export default function MeetingPage() {
       </div>
 
       <MeetingCreationModal
+        initialTab={initialTab}
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
