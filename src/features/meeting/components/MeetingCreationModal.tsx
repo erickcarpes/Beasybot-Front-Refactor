@@ -15,6 +15,7 @@ import RecordTab from './RecordTab';
 // ============================================================================
 
 interface MeetingCreationModalProps {
+  readonly initialTab?: ModalTab;
   readonly isOpen: boolean;
   readonly onClose: () => void;
   readonly onConfirm: (data: Omit<MeetingRequest, 'userId'>) => void;
@@ -37,12 +38,13 @@ const TAB_ITEMS = [
 // ============================================================================
 
 export default function MeetingCreationModal({
+  initialTab,
   isOpen,
   onClose,
   onConfirm,
   onImport,
 }: MeetingCreationModalProps) {
-  const [activeTab, setActiveTab] = useState<ModalTab>('RECORD');
+  const [activeTab, setActiveTab] = useState<ModalTab>(initialTab ?? 'RECORD');
 
   if (!isOpen) return null;
 
