@@ -14,6 +14,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SignupIndexRouteImport } from './routes/signup/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as AppmainRouteRouteImport } from './routes/app/(main)/route'
+import { Route as AppOnboardingIndexRouteImport } from './routes/app/onboarding/index'
 import { Route as AppmainSearchIndexRouteImport } from './routes/app/(main)/search/index'
 import { Route as AppmainMeetingIndexRouteImport } from './routes/app/(main)/meeting/index'
 import { Route as AppmainKnowledgeIndexRouteImport } from './routes/app/(main)/knowledge/index'
@@ -42,6 +43,11 @@ const LoginIndexRoute = LoginIndexRouteImport.update({
 } as any)
 const AppmainRouteRoute = AppmainRouteRouteImport.update({
   id: '/(main)',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppOnboardingIndexRoute = AppOnboardingIndexRouteImport.update({
+  id: '/onboarding/',
+  path: '/onboarding/',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppmainSearchIndexRoute = AppmainSearchIndexRouteImport.update({
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppmainRouteRouteWithChildren
   '/login/': typeof LoginIndexRoute
   '/signup/': typeof SignupIndexRoute
+  '/app/onboarding/': typeof AppOnboardingIndexRoute
   '/app/chat/$chatId': typeof AppmainChatChatIdRoute
   '/app/home/': typeof AppmainHomeIndexRoute
   '/app/knowledge/': typeof AppmainKnowledgeIndexRoute
@@ -86,6 +93,7 @@ export interface FileRoutesByTo {
   '/app': typeof AppmainRouteRouteWithChildren
   '/login': typeof LoginIndexRoute
   '/signup': typeof SignupIndexRoute
+  '/app/onboarding': typeof AppOnboardingIndexRoute
   '/app/chat/$chatId': typeof AppmainChatChatIdRoute
   '/app/home': typeof AppmainHomeIndexRoute
   '/app/knowledge': typeof AppmainKnowledgeIndexRoute
@@ -99,6 +107,7 @@ export interface FileRoutesById {
   '/app/(main)': typeof AppmainRouteRouteWithChildren
   '/login/': typeof LoginIndexRoute
   '/signup/': typeof SignupIndexRoute
+  '/app/onboarding/': typeof AppOnboardingIndexRoute
   '/app/(main)/chat/$chatId': typeof AppmainChatChatIdRoute
   '/app/(main)/home/': typeof AppmainHomeIndexRoute
   '/app/(main)/knowledge/': typeof AppmainKnowledgeIndexRoute
@@ -112,6 +121,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/login/'
     | '/signup/'
+    | '/app/onboarding/'
     | '/app/chat/$chatId'
     | '/app/home/'
     | '/app/knowledge/'
@@ -123,6 +133,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/login'
     | '/signup'
+    | '/app/onboarding'
     | '/app/chat/$chatId'
     | '/app/home'
     | '/app/knowledge'
@@ -135,6 +146,7 @@ export interface FileRouteTypes {
     | '/app/(main)'
     | '/login/'
     | '/signup/'
+    | '/app/onboarding/'
     | '/app/(main)/chat/$chatId'
     | '/app/(main)/home/'
     | '/app/(main)/knowledge/'
@@ -184,6 +196,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/app'
       preLoaderRoute: typeof AppmainRouteRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/onboarding/': {
+      id: '/app/onboarding/'
+      path: '/onboarding'
+      fullPath: '/app/onboarding/'
+      preLoaderRoute: typeof AppOnboardingIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/(main)/search/': {
@@ -246,10 +265,12 @@ const AppmainRouteRouteWithChildren = AppmainRouteRoute._addFileChildren(
 
 interface AppRouteRouteChildren {
   AppmainRouteRoute: typeof AppmainRouteRouteWithChildren
+  AppOnboardingIndexRoute: typeof AppOnboardingIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppmainRouteRoute: AppmainRouteRouteWithChildren,
+  AppOnboardingIndexRoute: AppOnboardingIndexRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
