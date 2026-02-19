@@ -76,6 +76,7 @@ export default function HomePage() {
             <div className="flex flex-col gap-4 md:flex-row">
               {HOME_ACTIONS.map((action) => (
                 <ActionCard
+                  action={action.action}
                   description={action.description}
                   icon={action.icon}
                   key={action.title}
