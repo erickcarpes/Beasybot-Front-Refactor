@@ -33,6 +33,8 @@ interface AuthContextValue {
   readonly login: (email: string, password: string) => Promise<void>;
   /** Realiza logout */
   readonly logout: () => Promise<void>;
+  /** Atualiza os dados do usuário logado */
+  readonly refreshUser: () => Promise<void>;
   /** Dados do usuário logado */
   readonly user: null | User;
 }
@@ -110,15 +112,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   }, []);
 
+  /**
+   * Atualiza os dados do usuário (ex: após onboarding)
+   */
+  const refreshUser = useCallback(async () => {
+    const userData = await fetchUserFromToken();
+    if (userData) {
+      setUser(userData);
+    }
+  }, []);
+
   const value = useMemo<AuthContextValue>(
     () => ({
       isAuthenticated,
       isLoading,
       login,
       logout,
+      refreshUser,
       user,
     }),
-    [isAuthenticated, isLoading, login, logout, user],
+    [isAuthenticated, isLoading, login, logout, refreshUser, user],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
