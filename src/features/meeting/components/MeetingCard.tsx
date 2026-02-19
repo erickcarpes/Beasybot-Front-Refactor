@@ -11,13 +11,17 @@ import {
   Trash2,
   Users,
   UserX,
+  Video,
 } from 'lucide-react';
+import { useMemo } from 'react';
 
 import type { DropdownItem } from '@/components/ui/DropdownMenu';
 
+import googleMeetLogo from '@/assets/google-meet-logo.svg';
+import microsoftTeamsLogo from '@/assets/microsoft-teams-logo.svg';
+import zoomLogo from '@/assets/zoom-logo.svg';
 import DropdownMenu from '@/components/ui/DropdownMenu';
-import { type Meeting } from '@/features/meeting';
-import { getParticipantsLabel } from '@/features/meeting';
+import { getParticipantsLabel, type Meeting } from '@/features/meeting';
 import { cn } from '@/utils/cn';
 
 interface MeetingCardProps extends Meeting {
@@ -29,28 +33,44 @@ const statusConfig: Record<
   Meeting['status'],
   { animation?: string; color: string; icon: LucideIcon; label: string }
 > = {
-  COMPLETED: { color: 'bg-green-accent text-text-white', icon: Check, label: 'Concluída' },
-  DENIED: { color: 'bg-fail-error text-text-white', icon: UserX, label: 'Permissão negada' },
-  FAILED: { color: 'bg-fail-error text-text-white', icon: CircleX, label: 'Falhou' },
+  COMPLETED: {
+    color: 'text-green',
+    icon: Check,
+    label: 'Concluída',
+  },
+  DENIED: {
+    color: 'text-red',
+    icon: UserX,
+    label: 'Permissão negada',
+  },
+  FAILED: {
+    color: 'text-red',
+    icon: CircleX,
+    label: 'Falhou',
+  },
   PENDING: {
     animation: 'animate-spin',
-    color: 'bg-text-2 text-text-white',
+    color: 'text-yellow',
     icon: LoaderCircle,
     label: 'Aguardando',
   },
   PROCESSING: {
     animation: 'animate-spin',
-    color: 'bg-[#9949BF] text-text-white',
+    color: 'text-orange',
     icon: LoaderCircle,
     label: 'Transcrevendo',
   },
   RECORDING: {
-    animation: 'animate-wiggle',
-    color: 'bg-[#C95252] text-text-white',
+    animation: 'animate-wiggle animate-pulse',
+    color: 'text-red',
     icon: AudioLines,
     label: 'Gravando',
   },
-  WAITING_ROOM: { color: 'bg-text-2 text-text-white', icon: Users, label: 'Sala de espera' },
+  WAITING_ROOM: {
+    color: 'text-text-gray',
+    icon: Users,
+    label: 'Sala de espera',
+  },
 };
 
 const formatDuration = (seconds: number) => {
@@ -58,6 +78,23 @@ const formatDuration = (seconds: number) => {
   const minutes = Math.floor((seconds % 3600) / 60);
   const secs = seconds % 60;
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+};
+
+const getPlatformIcon = (url?: string) => {
+  if (!url) return <Video className="text-text-gray" size={20} />;
+  const lowerUrl = url.toLowerCase();
+
+  if (lowerUrl.includes('meet.google') || lowerUrl.includes('google.com')) {
+    return <img alt="Google Meet" className="size-5" src={googleMeetLogo} />;
+  }
+  if (lowerUrl.includes('teams.microsoft') || lowerUrl.includes('teams.live')) {
+    return <img alt="Microsoft Teams" className="size-5" src={microsoftTeamsLogo} />;
+  }
+  if (lowerUrl.includes('zoom.us')) {
+    return <img alt="Zoom" className="size-5" src={zoomLogo} />;
+  }
+
+  return <Video className="text-text-gray" size={20} />;
 };
 
 export default function MeetingCard({
@@ -72,26 +109,30 @@ export default function MeetingCard({
   status,
   summary,
   title,
+  url,
 }: Readonly<MeetingCardProps>) {
-  const { animation, color, icon: Icon, label } = statusConfig[status];
+  const { animation, color, icon: StatusIcon, label } = statusConfig[status];
   const participantsLabel = getParticipantsLabel(participants);
-  const formattedDate = new Date(createdAt).toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
+
+  const formattedDate = useMemo(() => {
+    return new Date(createdAt).toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+  }, [createdAt]);
 
   const meetingRecord: Meeting = {
     createdAt,
     duration,
-    fileUrl: fileUrl,
+    fileUrl,
     id,
     insights,
     participants,
     status,
     summary,
     title,
-    url: fileUrl,
+    url: fileUrl || url,
   };
 
   const menuItems: DropdownItem[] = [
@@ -117,11 +158,15 @@ export default function MeetingCard({
     },
   ].filter(Boolean);
 
+  const StatusIconComponent = StatusIcon;
+
   return (
     <article
       className={cn(
-        'border-stroke-2 bg-components flex h-full flex-col justify-between rounded-2xl border p-5 shadow-[8px_8px_6px_0_rgba(22,21,21,0.6)] transition-transform duration-200',
-        status === 'COMPLETED' ? 'cursor-pointer hover:scale-[1.01]' : '',
+        'group border-border-dark-gray bg-component-gradient relative flex flex-col rounded-2xl border transition-all duration-300',
+        status === 'COMPLETED'
+          ? 'hover:border-border-gray cursor-pointer hover:-translate-y-1 hover:shadow-xl'
+          : 'opacity-90',
       )}
       onClick={() => {
         if (status === 'COMPLETED' && onView) {
@@ -129,41 +174,66 @@ export default function MeetingCard({
         }
       }}
     >
-      <header className="flex items-start justify-between gap-3 pb-4">
-        <h3 className="text-body-m text-text-white leading-tight font-semibold">
-          {title || 'Reunião'}
-        </h3>
-        <div className="flex items-center gap-2">
-          <span
-            className={cn(
-              'inline-flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-semibold',
-              color,
-            )}
-          >
-            {label}
-            <Icon className={animation} size={14} />
-          </span>
+      {/* Decorative top gradient glow */}
+      <div className="absolute inset-x-0 top-0 h-24 rounded-t-2xl bg-gradient-to-b from-white/[0.02] to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+      <div className="relative flex flex-1 flex-col p-5">
+        {/* Header: Platform + Menu */}
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex size-9 items-center justify-center rounded-lg bg-white/5 shadow-inner ring-1 ring-white/5">
+              {getPlatformIcon(url)}
+            </div>
+
+            {/* Status Badge */}
+            <div
+              className={cn(
+                'flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium shadow-sm ring-1 ring-inset',
+                status === 'COMPLETED'
+                  ? 'bg-green/10 text-green ring-green/20'
+                  : status === 'RECORDING' || status === 'FAILED'
+                    ? 'bg-red/10 text-red ring-red/20'
+                    : status === 'PENDING' || status === 'PROCESSING'
+                      ? 'bg-yellow/10 text-yellow ring-yellow/20'
+                      : 'bg-gray/10 text-text-gray ring-gray/20',
+              )}
+            >
+              <StatusIconComponent className={cn(animation)} size={12} />
+              {label}
+            </div>
+          </div>
+
           <DropdownMenu items={menuItems} />
         </div>
-      </header>
 
-      <div className="text-body-xs text-color-2 flex flex-col gap-2 pb-4">
-        <div className="flex items-center gap-2">
-          <Users size={14} />
-          <span className="truncate">{participantsLabel}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Calendar size={14} />
-          <span>{formattedDate}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Clock size={14} />
-          <span>{formatDuration(duration)}</span>
+        {/* Title */}
+        <h3 className="text-body-l text-text-white mb-3 line-clamp-2 leading-tight font-semibold tracking-tight">
+          {title || 'Nova Reunião'}
+        </h3>
+
+        {/* Summary */}
+        <p className="text-body-s text-text-gray/90 mb-6 line-clamp-3 leading-relaxed">
+          {summary || 'Nenhum resumo disponível para esta reunião.'}
+        </p>
+
+        {/* Footer: Metadata Grid */}
+        <div className="mt-auto grid grid-cols-2 gap-x-2 gap-y-3 border-t border-white/5 pt-4">
+          <div className="text-text-gray flex items-center gap-2">
+            <Calendar className="size-3.5 opacity-60" />
+            <span className="text-[11px] font-medium">{formattedDate}</span>
+          </div>
+
+          <div className="text-text-gray flex items-center gap-2">
+            <Clock className="size-3.5 opacity-60" />
+            <span className="text-[11px] font-medium">{formatDuration(duration)}</span>
+          </div>
+
+          <div className="text-text-gray col-span-2 flex items-center gap-2">
+            <Users className="size-3.5 opacity-60" />
+            <span className="truncate text-[11px] font-medium">{participantsLabel}</span>
+          </div>
         </div>
       </div>
-
-      <hr className="border-stroke-2" />
-      <p className="text-text-white line-clamp-4 pt-4 text-sm leading-5">{summary}</p>
     </article>
   );
 }

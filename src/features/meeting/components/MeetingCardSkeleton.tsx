@@ -7,39 +7,47 @@ export default function MeetingCardSkeleton({ count = 3 }: MeetingCardSkeletonPr
     <>
       {Array.from({ length: count }).map((_, index) => (
         <div
-          className="border-stroke-2 bg-components flex h-full animate-pulse flex-col justify-between rounded-2xl border p-5"
+          className="component-gradient border-border-dark-gray relative flex animate-pulse flex-col rounded-2xl border p-5"
           key={index}
         >
-          {/* Header */}
-          <div className="flex items-start justify-between gap-3 pb-4">
-            <div className="bg-component-hover/50 h-5 w-3/5 rounded" />
-            <div className="bg-component-hover/50 h-6 w-20 rounded-full" />
+          {/* Header: Logo + Status + Menu */}
+          <div className="mb-6 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {/* Logo Box */}
+              <div className="bg-component-hover/20 size-9 rounded-lg" />
+              {/* Status Badge */}
+              <div className="bg-component-hover/20 h-6 w-24 rounded-full" />
+            </div>
+            {/* Menu */}
+            <div className="bg-component-hover/20 size-6 rounded-md" />
           </div>
 
-          {/* Meta rows */}
-          <div className="flex flex-col gap-2.5 pb-4">
-            <div className="flex items-center gap-2">
-              <div className="bg-component-hover/30 size-3.5 rounded-full" />
-              <div className="bg-component-hover/30 h-3 w-2/3 rounded" />
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="bg-component-hover/30 size-3.5 rounded-full" />
-              <div className="bg-component-hover/30 h-3 w-1/3 rounded" />
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="bg-component-hover/30 size-3.5 rounded-full" />
-              <div className="bg-component-hover/30 h-3 w-1/4 rounded" />
-            </div>
+          {/* Title */}
+          <div className="bg-component-hover/40 mb-3 h-6 w-3/4 rounded" />
+
+          {/* Summary */}
+          <div className="mb-6 flex flex-col gap-2">
+            <div className="bg-component-hover/20 h-3 w-full rounded" />
+            <div className="bg-component-hover/20 h-3 w-5/6 rounded" />
           </div>
 
-          {/* Divider */}
-          <div className="bg-component-hover/30 h-px w-full" />
-
-          {/* Summary lines */}
-          <div className="flex flex-col gap-2 pt-4">
-            <div className="bg-component-hover/30 h-3 w-full rounded" />
-            <div className="bg-component-hover/30 h-3 w-5/6 rounded" />
-            <div className="bg-component-hover/30 h-3 w-2/3 rounded" />
+          {/* Footer Grid */}
+          <div className="border-component-hover/10 mt-auto grid grid-cols-2 gap-x-2 gap-y-3 border-t pt-4">
+            {/* Date */}
+            <div className="flex items-center gap-2">
+              <div className="bg-component-hover/20 size-3 rounded-full" />
+              <div className="bg-component-hover/20 h-2 w-16 rounded" />
+            </div>
+            {/* Duration */}
+            <div className="flex items-center gap-2">
+              <div className="bg-component-hover/20 size-3 rounded-full" />
+              <div className="bg-component-hover/20 h-2 w-12 rounded" />
+            </div>
+            {/* Participants */}
+            <div className="col-span-2 flex items-center gap-2">
+              <div className="bg-component-hover/20 size-3 rounded-full" />
+              <div className="bg-component-hover/20 h-2 w-32 rounded" />
+            </div>
           </div>
         </div>
       ))}
