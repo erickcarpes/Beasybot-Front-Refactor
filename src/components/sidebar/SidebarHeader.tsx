@@ -12,25 +12,32 @@ export default function SidebarHeader() {
   const { isExpanded, toggleExpanded } = useSidebar();
 
   return (
-    <div className="flex items-center justify-between px-5 pt-8 pb-10">
+    <div className="flex items-center px-3 pt-8 pb-10">
       <AnimatePresence mode="wait">
         {isExpanded ? (
-          <motion.span
-            animate={{ opacity: 1 }}
-            className="text-text-white text-lg font-bold tracking-wider"
-            exit={{ opacity: 0 }}
-            initial={{ opacity: 0 }}
-            key="logo-text"
+          <motion.div
+            animate={{ marginRight: 12, opacity: 1, width: 'auto' }}
+            className="overflow-hidden whitespace-nowrap"
+            exit={{ marginRight: 0, opacity: 0, width: 0 }}
+            initial={{ marginRight: 0, opacity: 0, width: 0 }}
+            key="logo-container"
             transition={{ duration: 0.15 }}
           >
             <img alt="Logo BBOX" src={logoBbox} />
-          </motion.span>
+          </motion.div>
         ) : null}
       </AnimatePresence>
 
+      <motion.div
+        animate={{ flexGrow: isExpanded ? 1 : 0 }}
+        className="min-w-0"
+        initial={false}
+        transition={{ duration: 0.15 }}
+      />
+
       <button
         aria-label={isExpanded ? 'Colapsar sidebar' : 'Expandir sidebar'}
-        className="text-text-gray hover:text-text-white rounded-m hover:bg-component-hover hidden cursor-pointer transition-colors md:flex"
+        className="text-text-gray hover:text-text-white rounded-m hover:bg-component-hover hidden shrink-0 cursor-pointer transition-colors md:flex"
         onClick={toggleExpanded}
         type="button"
       >
