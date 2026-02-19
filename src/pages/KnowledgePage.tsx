@@ -1,6 +1,7 @@
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import { type ColumnDef } from '@tanstack/react-table';
 import { Trash2 } from 'lucide-react';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 import Button from '@/components/ui/Button';
 import DataTable from '@/components/ui/DataTable';
@@ -40,6 +41,26 @@ export default function KnowledgePage() {
   } = useFilesPage({ userId: user.id });
 
   const { activeModal, closeModal, openModal } = useFileModal();
+
+  const navigate = useNavigate();
+  const { action } = useSearch({ from: '/app/(main)/knowledge/' });
+
+  // Snapshot the initial action so re-renders from navigate don't cancel the timer
+  const initialAction = useRef(action);
+
+  // Auto-open modal based on search param from HomePage action items
+  useEffect(() => {
+    if (initialAction.current === 'create-file') {
+      void navigate({ replace: true, search: {}, to: '.' });
+      const timer = setTimeout(() => {
+        openModal('CREATE_FILE');
+      }, 250);
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const {
     addFiles,
