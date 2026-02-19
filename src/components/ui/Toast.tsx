@@ -79,7 +79,7 @@ export default function Toast({ id, message, onClose, title, type }: Readonly<To
 
 export function ToastContainer({ children }: ToastContainerProps) {
   return (
-    <div className="pointer-events-none fixed right-0 bottom-0 z-50 flex flex-col gap-3 p-6">
+    <div className="pointer-events-none fixed right-0 bottom-0 z-100 flex flex-col gap-3 p-6">
       <AnimatePresence mode="popLayout">{children}</AnimatePresence>
     </div>
   );
