@@ -1,3 +1,4 @@
+import { useNavigate } from '@tanstack/react-router';
 import { type ColumnDef } from '@tanstack/react-table';
 import { Edit2, Trash2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
@@ -12,6 +13,7 @@ import {
   useDeleteChat,
   useDeleteChats,
   useGetAllChats,
+  useUpdateChat,
 } from '@/features/chat';
 import { cn } from '@/utils/cn';
 
@@ -26,9 +28,11 @@ type ModalState = { type: 'BULK_DELETE' } | null;
 // ============================================================================
 
 export default function SearchPage() {
+  const navigate = useNavigate();
   const [globalFilter, setGlobalFilter] = useState('');
   const [rowSelection, setRowSelection] = useState({});
   const [activeModal, setActiveModal] = useState<ModalState>(null);
+  const [editingChatId, setEditingChatId] = useState<null | string>(null);
 
   const { data: chats = [], isLoading } = useGetAllChats();
   const { mutateAsync: deleteChat } = useDeleteChat();
@@ -78,7 +82,12 @@ export default function SearchPage() {
     () => [
       {
         cell: ({ row }) => (
-          <div className="flex justify-center">
+          <div
+            className="flex justify-center"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
             <input
               checked={row.getIsSelected()}
               className="checked:bg-brand accent-brand size-4 cursor-pointer rounded checked:border-transparent focus:ring-0"
@@ -103,19 +112,13 @@ export default function SearchPage() {
       {
         accessorKey: 'name',
         cell: ({ row }) => (
-          <div className="flex items-center gap-3 pr-10 md:pr-0">
-            <div className="bg-brand/10 flex size-10 items-center justify-center rounded-lg md:hidden">
-              <span className="text-brand font-bold uppercase">{row.original.name.charAt(0)}</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-text-1 cursor-pointer truncate font-medium">
-                {row.original.name}
-              </span>
-              <span className="text-text-2 text-xs md:hidden">
-                {new Date(row.original.updatedAt).toLocaleDateString()}
-              </span>
-            </div>
-          </div>
+          <TableNameCell
+            chat={row.original}
+            isEditing={editingChatId === row.original.id}
+            onStopEditing={() => {
+              setEditingChatId(null);
+            }}
+          />
         ),
         header: 'Nome',
       },
@@ -152,14 +155,19 @@ export default function SearchPage() {
       },
       {
         cell: ({ row }) => (
-          <div className="flex justify-end">
+          <div
+            className="flex justify-end"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
             <DropdownMenu
               items={[
                 {
                   icon: Edit2,
                   label: 'Renomear',
                   onClick: () => {
-                    // Implement rename
+                    setEditingChatId(row.original.id);
                   },
                 },
                 {
@@ -178,7 +186,7 @@ export default function SearchPage() {
         id: 'actions',
       },
     ],
-    [handleSingleDelete],
+    [handleSingleDelete, editingChatId],
   );
 
   const selectedChatIds = Object.keys(rowSelection);
@@ -227,6 +235,9 @@ export default function SearchPage() {
             globalFilter={globalFilter}
             isLoading={isLoading}
             onGlobalFilterChange={setGlobalFilter}
+            onRowClick={(chat) => {
+              void navigate({ to: `/app/chat/${chat.id}` });
+            }}
             onRowSelectionChange={setRowSelection}
             rowSelection={rowSelection}
           />
@@ -240,6 +251,96 @@ export default function SearchPage() {
         onClose={handleCloseModal}
         onConfirm={handleBulkDelete}
       />
+    </div>
+  );
+}
+
+// ============================================================================
+// Subcomponents
+// ============================================================================
+
+function TableNameCell({
+  chat,
+  isEditing,
+  onStopEditing,
+}: {
+  readonly chat: Chat;
+  readonly isEditing: boolean;
+  readonly onStopEditing: () => void;
+}) {
+  const [name, setName] = useState(chat.name);
+  const { mutateAsync: updateChat } = useUpdateChat(chat.id);
+  const { showToast } = useToast();
+
+  const handleRename = async () => {
+    onStopEditing();
+    if (!name.trim() || name.trim() === chat.name) {
+      setName(chat.name);
+      return;
+    }
+    try {
+      await updateChat({ name: name.trim() });
+      showToast('Conversa renomeada com sucesso!', 'success');
+    } catch {
+      showToast('Erro ao renomear conversa.', 'error');
+      setName(chat.name);
+    }
+  };
+
+  if (isEditing) {
+    return (
+      <div
+        className="flex items-center gap-3 pr-10 md:pr-0"
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      >
+        <div className="bg-brand/10 flex size-10 shrink-0 items-center justify-center rounded-lg md:hidden">
+          <span className="text-brand font-bold uppercase">{chat.name.charAt(0)}</span>
+        </div>
+        <form
+          className="w-full min-w-0 flex-1"
+          onSubmit={(e) => {
+            e.preventDefault();
+            void handleRename();
+          }}
+        >
+          <input
+            autoFocus
+            className="text-text-white border-text-white w-full border-b bg-transparent outline-none"
+            onBlur={() => {
+              void handleRename();
+            }}
+            onChange={(e) => {
+              setName(e.target.value);
+            }}
+            onFocus={(e) => {
+              e.target.select();
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') {
+                setName(chat.name);
+                onStopEditing();
+              }
+            }}
+            value={name}
+          />
+        </form>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-3 pr-10 md:pr-0">
+      <div className="bg-brand/10 flex size-10 shrink-0 items-center justify-center rounded-lg md:hidden">
+        <span className="text-brand font-bold uppercase">{chat.name.charAt(0)}</span>
+      </div>
+      <div className="flex min-w-0 flex-col">
+        <span className="text-text-1 cursor-pointer truncate font-medium">{chat.name}</span>
+        <span className="text-text-2 text-xs md:hidden">
+          {new Date(chat.updatedAt).toLocaleDateString()}
+        </span>
+      </div>
     </div>
   );
 }
