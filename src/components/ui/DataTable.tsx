@@ -22,6 +22,7 @@ interface DataTableProps<TData, TValue> {
   readonly globalFilter?: string;
   readonly isLoading?: boolean;
   readonly onGlobalFilterChange?: (value: string) => void;
+  readonly onRowClick?: (row: TData) => void;
   readonly onRowSelectionChange?: (updater: Updater<RowSelectionState>) => void;
   readonly rowSelection?: RowSelectionState;
 }
@@ -34,6 +35,7 @@ export default function DataTable<TData, TValue>({
   globalFilter,
   isLoading,
   onGlobalFilterChange,
+  onRowClick,
   onRowSelectionChange,
   rowSelection = {},
 }: DataTableProps<TData, TValue>) {
@@ -92,8 +94,12 @@ export default function DataTable<TData, TValue>({
                 className={cn(
                   'group hover:bg-component-hover/20 transition-colors',
                   row.getIsSelected() && 'bg-brand/5 hover:bg-brand/10',
+                  onRowClick && 'cursor-pointer',
                 )}
                 key={row.id}
+                onClick={() => {
+                  onRowClick?.(row.original);
+                }}
               >
                 {row.getVisibleCells().map((cell) => (
                   <td className="px-6 py-3.5" key={cell.id}>

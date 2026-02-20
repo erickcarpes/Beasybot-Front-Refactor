@@ -13,15 +13,6 @@ export interface ChatMessage {
 
 export type MessageRole = 'bot' | 'user';
 
-export interface OnboardingPayload {
-  readonly businessSegment?: string;
-  readonly companyName?: string;
-  readonly importantLinks?: string;
-  readonly jobRole?: string;
-  readonly preferredTone?: string;
-  readonly usageFocus?: string;
-}
-
 export interface Option {
   readonly label: string;
   readonly value: string;
