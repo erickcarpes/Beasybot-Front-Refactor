@@ -1,12 +1,12 @@
-import { useNavigate } from '@tanstack/react-router';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 
-import { type Chat, type ChatOrigin, useGetAllChats } from '@/features/chat';
-import { cn } from '@/utils/cn';
+import { useToast } from '@/contexts/toastContext';
+import { type Chat, type ChatOrigin, useDeleteChat, useGetAllChats } from '@/features/chat';
 
 import { useSidebar } from './SidebarContext';
+import SidebarItem from './SidebarItem';
 
 const ORIGIN_LABELS: Record<ChatOrigin, string> = {
   MEETING: 'Web',
@@ -23,42 +23,65 @@ export default function SidebarConversations() {
   const { isExpanded } = useSidebar();
   const [activeConversationId, setActiveConversationId] = useState<null | string>(null);
 
+  const { mutateAsync: deleteChat } = useDeleteChat();
+  const { showToast } = useToast();
+
   const webConversations = chats.filter((c) => c.origin === 'WEB' || c.origin === 'MEETING');
   const whatsappConversations = chats.filter((c) => c.origin === 'WHATSAPP');
 
+  const handleDeleteChat = async (id: string) => {
+    try {
+      await deleteChat(id);
+      showToast('Conversa excluída com sucesso!', 'success');
+      if (activeConversationId === id) {
+        setActiveConversationId(null);
+      }
+    } catch {
+      showToast('Erro ao excluir conversa.', 'error');
+    }
+  };
+
   return (
-    <AnimatePresence mode="wait">
-      {isExpanded ? (
-        <motion.div
-          animate={{ opacity: 1 }}
-          className="flex flex-col gap-1 px-2"
-          exit={{ opacity: 0 }}
-          initial={{ opacity: 0 }}
-          key="conversations"
-          transition={{ duration: 0.15 }}
-        >
-          {/* Divider */}
-          <div className="border-border-dark-gray mx-2 my-2 border-t" />
+    <>
+      <AnimatePresence mode="wait">
+        {isExpanded ? (
+          <motion.div
+            animate={{ opacity: 1 }}
+            className="flex flex-col gap-1 px-2"
+            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }}
+            key="conversations"
+            transition={{ duration: 0.15 }}
+          >
+            {/* Divider */}
+            <div className="border-border-dark-gray mx-2 my-2 border-t" />
 
-          <span className="text-text-1 text-body-m px-3 py-1 font-medium tracking-wider">
-            Conversas
-          </span>
+            <span className="text-text-1 text-body-m px-3 py-1 font-medium tracking-wider">
+              Conversas
+            </span>
 
-          <ConversationGroup
-            activeConversationId={activeConversationId}
-            conversations={webConversations}
-            onSelectConversation={setActiveConversationId}
-            origin="WEB"
-          />
-          <ConversationGroup
-            activeConversationId={activeConversationId}
-            conversations={whatsappConversations}
-            onSelectConversation={setActiveConversationId}
-            origin="WHATSAPP"
-          />
-        </motion.div>
-      ) : null}
-    </AnimatePresence>
+            <ConversationGroup
+              activeConversationId={activeConversationId}
+              conversations={webConversations}
+              onDeleteChat={(id) => {
+                void handleDeleteChat(id);
+              }}
+              onSelectConversation={setActiveConversationId}
+              origin="WEB"
+            />
+            <ConversationGroup
+              activeConversationId={activeConversationId}
+              conversations={whatsappConversations}
+              onDeleteChat={(id) => {
+                void handleDeleteChat(id);
+              }}
+              onSelectConversation={setActiveConversationId}
+              origin="WHATSAPP"
+            />
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </>
   );
 }
 
@@ -68,15 +91,16 @@ export default function SidebarConversations() {
 function ConversationGroup({
   activeConversationId,
   conversations,
+  onDeleteChat,
   onSelectConversation,
   origin,
 }: {
   readonly activeConversationId: null | string;
   readonly conversations: Chat[];
+  readonly onDeleteChat: (id: string) => void;
   readonly onSelectConversation: (id: string) => void;
   readonly origin: ChatOrigin;
 }) {
-  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -104,34 +128,25 @@ function ConversationGroup({
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div
-            animate={{ height: 'auto', opacity: 1 }}
-            className="flex flex-col gap-0.5 overflow-hidden"
-            exit={{ height: 0, opacity: 0 }}
-            initial={{ height: 0, opacity: 0 }}
+            animate={{
+              height: 'auto',
+              opacity: 1,
+              transitionEnd: { overflow: 'visible' },
+            }}
+            className="flex flex-col gap-0.5"
+            exit={{ height: 0, opacity: 0, overflow: 'hidden' }}
+            initial={{ height: 0, opacity: 0, overflow: 'hidden' }}
             transition={{ duration: 0.2, ease: 'easeInOut' }}
           >
-            {conversations.map((conversation) => {
-              const isActive = activeConversationId === conversation.id;
-
-              return (
-                <button
-                  className={cn(
-                    'rounded-m ml-7 cursor-pointer truncate py-1.5 pl-2 text-left text-sm transition-colors',
-                    isActive
-                      ? 'bg-component-default text-text-white'
-                      : 'text-text-gray hover:bg-component-hover/50 hover:text-text-white',
-                  )}
-                  key={conversation.id}
-                  onClick={() => {
-                    onSelectConversation(conversation.id);
-                    void navigate({ to: `/app/chat/${conversation.id}` });
-                  }}
-                  type="button"
-                >
-                  {conversation.name.trim() ? conversation.name : 'Conversa sem nome'}
-                </button>
-              );
-            })}
+            {conversations.map((conversation) => (
+              <SidebarItem
+                activeConversationId={activeConversationId}
+                conversation={conversation}
+                key={conversation.id}
+                onDeleteChat={onDeleteChat}
+                onSelectConversation={onSelectConversation}
+              />
+            ))}
           </motion.div>
         )}
       </AnimatePresence>
