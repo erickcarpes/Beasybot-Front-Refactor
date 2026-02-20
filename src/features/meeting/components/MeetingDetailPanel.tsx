@@ -1,8 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Calendar, Clock, Lightbulb, Play, Users, X } from 'lucide-react';
+import { useState } from 'react';
 
-import { type Meeting } from '@/features/meeting';
-import { getParticipantsLabel } from '@/features/meeting';
+import { getParticipantsLabel, type Meeting } from '@/features/meeting';
 
 import { ChatInput } from '../../chat';
 
@@ -24,6 +24,9 @@ export default function MeetingDetailPanel({
   onClose,
   onSendMessage,
 }: MeetingDetailPanelProps) {
+  const [isTranscriptionOpen, setIsTranscriptionOpen] = useState(false);
+  const [isMinutesOpen, setIsMinutesOpen] = useState(false);
+
   const participantsLabel = meeting ? getParticipantsLabel(meeting.participants) : '';
   const formattedDate = meeting
     ? new Date(meeting.createdAt).toLocaleDateString('pt-BR', {
@@ -37,6 +40,11 @@ export default function MeetingDetailPanel({
         hour: '2-digit',
         minute: '2-digit',
       })
+    : '';
+
+  const insightsText = meeting?.insights.map((insight) => `- ${insight}`).join('\n') ?? '';
+  const initialMinutes = meeting?.summary
+    ? `Resumo:\n${meeting.summary}\n\nInsights:\n${insightsText}`
     : '';
 
   return (
@@ -153,6 +161,23 @@ export default function MeetingDetailPanel({
               />
             </div>
           </motion.div>
+
+          <MeetingTranscriptionModal
+            isOpen={isTranscriptionOpen}
+            onClose={() => {
+              setIsTranscriptionOpen(false);
+            }}
+            transcription={meeting.transcription}
+          />
+
+          <MeetingMinutesModal
+            initialMinutes={initialMinutes}
+            isOpen={isMinutesOpen}
+            meetingTitle={meeting.title}
+            onClose={() => {
+              setIsMinutesOpen(false);
+            }}
+          />
         </div>
       )}
     </AnimatePresence>
