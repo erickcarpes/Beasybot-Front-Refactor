@@ -1,3 +1,5 @@
+import { useMutation } from '@tanstack/react-query';
+
 import { apiAuth } from './api';
 import { setAccessToken } from './tokenManager';
 
@@ -56,4 +58,48 @@ export const refreshTokens = async (): Promise<string> => {
   setAccessToken(accessToken);
 
   return accessToken;
+};
+
+import api from '@/services/beasybox-api/api';
+
+interface VerifyPhoneRequest {
+  phone: string;
+}
+
+interface VerifyPhoneResponse {
+  expiresAt: Date;
+  id: string;
+  isRevoked: boolean;
+  phone: string;
+}
+
+export const useVerifyPhone = () => {
+  return useMutation({
+    mutationFn: async (payload: VerifyPhoneRequest) => {
+      const response = await api.post<VerifyPhoneResponse>('/auth/verify-phone', payload);
+      return response.data;
+    },
+  });
+};
+
+interface ValidatePhoneCodeRequest {
+  token: string;
+  tokenId: string;
+}
+
+interface ValidatePhoneCodeResponse {
+  message?: string;
+  success: boolean;
+}
+
+export const useValidatePhoneCode = () => {
+  return useMutation({
+    mutationFn: async (payload: ValidatePhoneCodeRequest) => {
+      const response = await api.post<ValidatePhoneCodeResponse>(
+        '/auth/verify-phone/validate',
+        payload,
+      );
+      return response.data;
+    },
+  });
 };

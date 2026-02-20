@@ -61,7 +61,7 @@ export const useUser = ({ userId }: UseUserOptions) => {
 };
 
 interface DeleteUserRequest {
-  id: string;
+  password: string;
 }
 
 /**
@@ -69,8 +69,8 @@ interface DeleteUserRequest {
  */
 export const useDeleteUser = () => {
   return useMutation({
-    mutationFn: async ({ id }: DeleteUserRequest) => {
-      const response = await api.delete<boolean>(`/user/${id}`);
+    mutationFn: async (data: DeleteUserRequest) => {
+      const response = await api.delete<boolean>(`/user`, { data });
       return response.data;
     },
   });
