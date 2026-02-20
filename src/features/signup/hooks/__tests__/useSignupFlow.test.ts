@@ -50,7 +50,7 @@ describe('useSignupFlow', () => {
   };
 
   test('shows success toast when signup completes', async () => {
-    mutateAsync.mockResolvedValue(undefined);
+    mutateAsync.mockResolvedValue();
 
     const { result } = renderHook(() => useSignupFlow());
 

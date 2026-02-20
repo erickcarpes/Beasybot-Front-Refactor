@@ -14,7 +14,7 @@ vi.mock('lottie-react', () => ({
   default: (props: React.ComponentProps<'div'>) => <div data-testid="lottie" {...props} />,
 }));
 
-const createMotionComponent = (tag: keyof JSX.IntrinsicElements) =>
+const createMotionComponent = (tag: keyof React.JSX.IntrinsicElements) =>
   React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>((props, ref) =>
     React.createElement(tag, { ...props, ref }),
   );
@@ -22,11 +22,11 @@ const createMotionComponent = (tag: keyof JSX.IntrinsicElements) =>
 const motionMock = new Proxy(
   {},
   {
-    get: (_target, prop) => {
-      if (typeof prop !== 'string') {
+    get: (_target, property) => {
+      if (typeof property !== 'string') {
         return createMotionComponent('div');
       }
-      return createMotionComponent(prop as keyof JSX.IntrinsicElements);
+      return createMotionComponent(property as keyof React.JSX.IntrinsicElements);
     },
   },
 );
