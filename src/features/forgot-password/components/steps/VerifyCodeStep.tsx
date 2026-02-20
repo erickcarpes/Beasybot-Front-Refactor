@@ -45,7 +45,7 @@ export default function VerifyCodeStep({
       </Modal.Description>
 
       <form
-        className="gap-m mt-m flex w-full flex-col items-center"
+        className="gap-m flex w-full flex-col items-center"
         onSubmit={(e) => void handleSubmit(onSubmit)(e)}
       >
         <Controller
