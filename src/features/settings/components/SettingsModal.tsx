@@ -18,7 +18,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   return createPortal(
     <AnimatePresence>
       {isOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-10 flex items-center justify-center">
           {/* Backdrop */}
           <motion.div
             animate={{ opacity: 1 }}
