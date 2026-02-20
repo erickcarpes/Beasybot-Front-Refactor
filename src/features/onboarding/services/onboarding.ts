@@ -2,37 +2,22 @@ import { useMutation } from '@tanstack/react-query';
 
 import api from '@/services/beasybox-api/api';
 
-import type { OnboardingPayload } from '../types';
-
 // ============================================================================
 // Types
 // ============================================================================
 
+export interface OnboardingPayload {
+  readonly businessSegment?: string;
+  readonly companyName?: string;
+  readonly importantLinks?: string;
+  readonly jobRole?: string;
+  readonly preferredTone?: string;
+  readonly usageFocus?: string;
+}
+
 interface OnboardingResponse {
   readonly id: string;
 }
-
-// ============================================================================
-// API Functions
-// ============================================================================
-
-/**
- * Cria o onboarding do usuário (primeira vez)
- */
-export const createOnboarding = async (payload: OnboardingPayload): Promise<OnboardingResponse> => {
-  const response = await api.post<OnboardingResponse>('/onboarding', payload);
-  return response.data;
-};
-
-/**
- * Atualiza o onboarding do usuário
- */
-export const updateOnboarding = async (
-  payload: Partial<OnboardingPayload>,
-): Promise<OnboardingResponse> => {
-  const response = await api.patch<OnboardingResponse>('/onboarding', payload);
-  return response.data;
-};
 
 // ============================================================================
 // React Query Hooks
@@ -43,8 +28,10 @@ export const updateOnboarding = async (
  */
 export const useCreateOnboarding = () => {
   return useMutation({
-    mutationFn: createOnboarding,
-    mutationKey: ['onboarding', 'create'],
+    mutationFn: async (payload: OnboardingPayload) => {
+      const response = await api.post<OnboardingResponse>('/onboarding', payload);
+      return response.data;
+    },
   });
 };
 
@@ -53,7 +40,9 @@ export const useCreateOnboarding = () => {
  */
 export const useUpdateOnboarding = () => {
   return useMutation({
-    mutationFn: updateOnboarding,
-    mutationKey: ['onboarding', 'update'],
+    mutationFn: async (payload: Partial<OnboardingPayload>) => {
+      const response = await api.patch<OnboardingResponse>('/onboarding', payload);
+      return response.data;
+    },
   });
 };

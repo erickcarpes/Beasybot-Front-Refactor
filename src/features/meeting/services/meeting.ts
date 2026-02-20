@@ -13,6 +13,7 @@ export interface Meeting {
   status: MeetingStatus;
   summary: string;
   title: string;
+  transcription: string;
   url: string;
 }
 export interface MeetingRequest {
